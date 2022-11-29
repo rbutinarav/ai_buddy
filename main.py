@@ -44,6 +44,10 @@ def st_write(text):
 #MAIN LOOP
 st.title("Open AI chatbot")
 
+#get the first 5 digits of the OPENAI key
+secrets = st.secrets["OPENAI_KEY"]
+secrets5 = secrets[0:5]
+st.write(secrets5)
 
 #1.SELECT A PERSONA TO TALK TO
 persona = st.sidebar.selectbox("Select a persona", ["", "Leonardo Da Vinci", "Albert Einstein", "Nelson Mandela", "Martin Luther King"])
