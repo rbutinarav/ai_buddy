@@ -42,7 +42,7 @@ def st_write(text):
     return
 
 #MAIN LOOP
-st.title("Open AI chatbot NEW")
+st.title("Open AI chatbot")
 
 
 #1.SELECT A PERSONA TO TALK TO
