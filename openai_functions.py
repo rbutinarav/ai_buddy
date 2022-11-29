@@ -3,11 +3,7 @@ def ai_complete(prompt='Hello', model='text-davinci-002', temperature=0.2, max_t
     """
     Returns a string with the completion of the prompt
     """
-    import os
     import openai
-    import json
-    from dotenv import load_dotenv
-    import pandas as pd
 
     #LOAD ENV VARIABLES - this is commented for use in streamlit
     #load_dotenv()
