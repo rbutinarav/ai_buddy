@@ -9,9 +9,9 @@ def ai_complete(prompt='Hello', model='text-davinci-002', temperature=0.2, max_t
     from dotenv import load_dotenv
     import pandas as pd
 
-    #LOAD ENV VARIABLES
-    load_dotenv()
-    openai.api_key = os.getenv('OPENAI_KEY')
+    #LOAD ENV VARIABLES - this is commented for use in streamlit
+    #load_dotenv()
+    #openai.api_key = os.getenv('OPENAI_KEY')
     
     response = openai.Completion.create(model=model, prompt=prompt, temperature=temperature, max_tokens=max_tokens)
     #print(type(response))  
