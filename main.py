@@ -107,3 +107,5 @@ if persona != "" and question != "" and question != st.session_state.question:
     st.session_state.conversation_history = st.session_state.conversation_history + "\n \n" + "You: " + question + "\n" + persona + ": " + answer
     #st.write("CONVERSATION HISTORY: ", st.session_state.conversation_history)
     st.experimental_rerun()
+
+    #version 2.1 test
