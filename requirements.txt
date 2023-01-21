@@ -1,1 +1,2 @@
 openai
+azure-storage-blob
