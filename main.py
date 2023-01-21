@@ -92,3 +92,5 @@ if persona != "" and question != "" and question != st.session_state.question:
     question_box=st.empty() #doesn't work
     #st.session_state.question = ""
     st.experimental_rerun()
+
+    #version2
