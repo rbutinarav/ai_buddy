@@ -1,5 +1,5 @@
 #%%
-def ai_complete(prompt='Hello', model='text-davinci-002', temperature=0.2, max_tokens=6, verbose=False):
+def ai_complete(prompt='Hello', model='text-davinci-003', temperature=0.2, max_tokens=30, verbose=False):
     """
     Returns a string with the completion of the prompt
     """

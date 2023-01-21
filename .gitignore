@@ -1,3 +1,5 @@
 __pycache__/openai_functions.cpython-39.pyc
 .streamlit/secrets.toml
 .env
+/documents
+
