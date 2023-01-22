@@ -1,2 +1,3 @@
 openai
 azure-storage-blob
+dotenv
