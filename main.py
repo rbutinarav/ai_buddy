@@ -57,9 +57,8 @@ st.write("You are talking with", st.session_state.current_persona)
 st.write("You were talking with", st.session_state.previous_persona)
 
 
-#2.WANT TO SEE THE FULL CONVERSATION HISTORY?
+#2.MANAGE CONVERSAION HISTORY
 
-#show_history= st.sidebar.checkbox("Show history", value=True)
 conversation_reset = st.sidebar.button("Clear conversation")
 save_conversation = st.sidebar.button("Save conversation")
 
@@ -77,9 +76,18 @@ if save_conversation:
     filename = "Conversation " + st.session_state.current_persona + " " + now.strftime("%Y-%m-%d_%H-%M") + ".txt"
 #replace spaces with underscores
     filename = filename.replace(" ", "_")
+    #check if documents folder exists if not create it
+    import os
+    if not os.path.exists("documents"):
+        os.makedirs("documents")
     f = open("documents/"+filename, "w")
     f.write(st.session_state.conversation_history)
     f.close()
+
+    #upload the file to Azure blob storage
+    from azure_functions import uploadToBlobStorage
+    uploadToBlobStorage("documents/"+filename,filename)
+    
     st.write("Conversation saved in file", filename)
 
 #3.HAS THE USER ASKED A QUESTION?
@@ -96,7 +104,7 @@ if persona != "" and question != "" and question != st.session_state.question:
         full_context = "You are talking with "+persona+"\n"+ "You: "
     else:
         full_context = st.session_state.conversation_history+"\n \n"+"You: "
-    #st_write("FUll CONTEXT: "+full_context)
+
     full_question=question+"\n"+persona+": "
     answer=openai_conversation(context=full_context,question=full_question)
     #delete the first 1 characters of the answer
@@ -108,4 +116,4 @@ if persona != "" and question != "" and question != st.session_state.question:
     #st.write("CONVERSATION HISTORY: ", st.session_state.conversation_history)
     st.experimental_rerun()
 
-    #version 2.1 test
+    

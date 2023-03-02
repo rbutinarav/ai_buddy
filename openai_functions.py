@@ -4,12 +4,8 @@ def ai_complete(prompt='Hello', model='text-davinci-003', temperature=0.2, max_t
     Returns a string with the completion of the prompt
     """
     import openai
-
-    #LOAD ENV VARIABLES - this is commented for use in streamlit
-    #load_dotenv()
-    #openai.api_key = os.getenv('OPENAI_KEY')
     
-    #LOAD ENV VARIABLES - for streamlit
+    #LOAD ENV VARIABLES (secrets)
     import streamlit as st
     openai.api_key = st.secrets["OPENAI_KEY"]
 
