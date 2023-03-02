@@ -20,3 +20,32 @@ def uploadToBlobStorage(file_path,file_name):
         blob_client.upload_blob(data)
 
 #uploadToBlobStorage("azure_functions.py","azure_functions.py")
+
+def listBlobs():
+    #import the libraries for managing the azure blob storage
+    from azure.storage.blob import BlobServiceClient
+
+    #load env variables from .env file
+    import dotenv
+    import os
+    import streamlit as st
+    dotenv.load_dotenv()
+    container_name = os.getenv("AZURE_STORAGE_CONTAINER_NAME")
+
+    #add env variables from .secrets.toml file
+    import streamlit
+    #storage_account_key = streamlit.secrets["AZURE_STORAGE_KEY"]
+    connection_string = streamlit.secrets["AZURE_STORAGE_CONNECTION_STRING"]
+
+    blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+    container_client = blob_service_client.get_container_client(container_name)
+
+    blob_list = container_client.list_blobs()
+    for blob in blob_list:
+        st.write("t" + blob.name)
+        
+
+
+
+
+    
