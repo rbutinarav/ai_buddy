@@ -23,6 +23,8 @@ if "question" not in st.session_state:
     st.session_state.question = ""
 if "question_box" not in st.session_state:
     st.session_state.question_box = ""
+if "load_document" not in st.session_state:
+    st.session_state.load_document = False
 
 # Intialize other variables
 
@@ -57,7 +59,7 @@ st.write("You are talking with", st.session_state.current_persona)
 st.write("You were talking with", st.session_state.previous_persona)
 
 
-#2.MANAGE CONVERSAION HISTORY
+#2.MANAGE CONVERSATION HISTORY
 
 conversation_reset = st.sidebar.button("Clear conversation")
 save_conversation = st.sidebar.button("Save conversation")
@@ -116,4 +118,42 @@ if persona != "" and question != "" and question != st.session_state.question:
     #st.write("CONVERSATION HISTORY: ", st.session_state.conversation_history)
     st.experimental_rerun()
 
+
+#4.UPLOAD DOCUMENTS IF USER ASK TO DO SO
+
+if st.session_state.current_persona == "Jarvis":
+    st.write("Remember you can upload documents to the server and I will index them for you.")
+
+    from azure_functions import uploadToBlobStorage
+
+    load_documents = st.sidebar.button("Load documents")
+
+    if load_documents is True or st.session_state.load_document is True:
+        #ask user to select a file to upload
+        uploaded_file = st.file_uploader("Choose a file")
+        if uploaded_file is not None:
+            uploaded_file_name = uploaded_file.name
+
+            #write the file to the server as binary
+            with open(uploaded_file_name, 'wb') as f:
+                f.write(uploaded_file.getbuffer())
+
+            #copy the file to the azure blob storage
+            uploadToBlobStorage(uploaded_file_name,uploaded_file_name)
+
+            st.write("File uploaded to the server")
+            st.session_state.load_document = False
+
+        else:
+            st.session_state.load_document = True
+
+
+#5.LIST UPLOADED DOCUMENTS
+    st.write("Rembember you can also browse the documents already uploaded to the server.")
+
+    from azure_functions import listBlobs
+
+    review_documents = st.sidebar.button("List documents")
     
+    if review_documents:
+        listBlobs()
