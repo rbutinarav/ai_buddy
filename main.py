@@ -2,7 +2,7 @@ import os
 import datetime
 import streamlit as st
 from openai_functions import ai_complete
-from azure_functions import uploadToBlobStorage, listBlobs, text_to_speech, text_to_speech_audio
+from azure_functions import uploadToBlobStorage, listBlobs, text_to_speech
 
 # Define functions
 def initialize_state():
@@ -103,7 +103,7 @@ def main():
             if use_voice:
                 #drop the {persona} from the answer
                 answer_2 = answer_1.split(": ")[1]
-                text_to_speech_audio(answer_2)
+                text_to_speech(answer_2)
    
             # Update the conversation history
             st.session_state.conversation_history += f"\n\nMe: {question}\n\n{answer_1}"

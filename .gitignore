@@ -1,4 +1,5 @@
 .streamlit/secrets.toml
+__pycache__
 documents
 embedreviews.py
 loaddocs.py
@@ -8,4 +9,3 @@ output
 main_old.py
 main_old2.py
 main2.py
-__pycache__

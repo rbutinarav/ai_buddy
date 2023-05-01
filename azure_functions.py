@@ -5,7 +5,7 @@ from azure.ai.textanalytics import TextAnalyticsClient
 from azure.core.credentials import AzureKeyCredential
 from azure.storage.blob import BlobServiceClient
 import azure.cognitiveservices.speech as speechsdk
-import azure.cognitiveservices.speech.audio as audio
+
 
 dotenv.load_dotenv()
 
@@ -69,25 +69,6 @@ def text_to_speech(text, voicetype="it-IT-IsabellaNeural"):
         print("Text-to-speech synthesis was canceled.")
 
 
-def text_to_speech_audio(text, voicetype="it-IT-IsabellaNeural"):
-    subscription_key = st.secrets["AZURE_COGNITIVE_SERVICES_KEY"]
-    region = os.getenv("AZURE_COGNITIVE_SERVICES_REGION")
-
-    speech_config = speechsdk.SpeechConfig(subscription=subscription_key, region=region)
-    speech_config.speech_synthesis_voice_name = voicetype
-
-    audio_config = audio.AudioOutputConfig(use_default_speaker=True)
-
-    speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)
-
-    result = speech_synthesizer.speak_text_async(text).get()
-
-    if result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
-        print("Text-to-speech synthesis completed.")
-    elif result.reason == speechsdk.ResultReason.Canceled:
-        print("Text-to-speech synthesis was canceled.")
-
-       
 def detect_language(text):
 
     dotenv.load_dotenv()
@@ -106,6 +87,7 @@ def detect_language(text):
     return detected_language
 
 
-
+##there should be a way to get a wave file from text to speech and then play it separately, thus avoiding the deployment issues with text_to_speech library
+##this is still to be developed, so text to speech only works locally
 
     
