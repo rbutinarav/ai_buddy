@@ -1,3 +1,8 @@
-openai
-azure-storage-blob
-python-dotenv
+streamlit==1.5.0
+azure-ai-textanalytics==5.1.0
+azure-core==1.18.0
+azure-storage-blob==12.9.0
+azure-cognitiveservices-speech==1.19.0
+logging==0.5.1.2
+datetime==4.3
+#dotenv==0.17.1

@@ -1,159 +1,113 @@
-##run this file to start the program
-##will create an interative window with streamlit
-##user will be able to chat with the bot, ask information
-##the bot will answer searching for specific contents stored in a database
-##made of documents indexed by OpenAI using embeddings
-
-
-##print "hello world" on a web page with streamlit
-# %%
+import os
+import datetime
 import streamlit as st
-from openai_functions import ai_complete #import ai_complete: returns a string with the completion of the prompt
+from openai_functions import ai_complete
+from azure_functions import uploadToBlobStorage, listBlobs
 
-# Initialize State on first run
-if "conversation_history" not in st.session_state:
-    st.session_state.conversation_history = ""
-if "current_persona" not in st.session_state:
-    st.session_state.current_persona = ""
-if "previous_persona" not in st.session_state:
-    st.session_state.previous_persona = ""
-if "reset_history" not in st.session_state:
-    st.session_state.reset_history = False
-if "question" not in st.session_state:
-    st.session_state.question = ""
-if "question_box" not in st.session_state:
-    st.session_state.question_box = ""
-if "load_document" not in st.session_state:
-    st.session_state.load_document = False
+# Define functions
+def initialize_state():
+    session_vars = [
+        "conversation_history", "current_persona", "previous_persona",
+        "reset_history", "question", "question_box", "load_document"
+    ]
+    for var in session_vars:
+        if var not in st.session_state:
+            st.session_state[var] = ""
 
-# Intialize other variables
-
-question = st.empty()
-current_persona = ""
-
-#DEFINED FUNCTIONS
-## this trigger OpenAI response
-def openai_conversation(context, question):
-    answer = ai_complete(context+question, max_tokens=100)
-    return answer
-
-#this print text on the web page with streamlit with the proper format for "\n"
-def st_write(text):
-    new_text=text.replace("\n", "  \n")
-    st.write(new_text)
+def st_write2(text):
+    new_text = text.replace("\n", "<br>")
+    st.markdown(new_text, unsafe_allow_html=True)
     return
 
-#MAIN LOOP
-st.title("Open AI chatbot")
-
-#1.SELECT A PERSONA TO TALK TO
-persona = st.sidebar.selectbox("Select a persona", ["", "Leonardo Da Vinci", "Albert Einstein", "Nelson Mandela", "Martin Luther King", "Jarvis"])
-
-#check if the user has selected a new persona
-if st.session_state.current_persona != persona:
-    st.session_state.previous_persona = st.session_state.current_persona
-    st.session_state.current_persona = persona
-    #question = st.empty()
-
-st.write("You are talking with", st.session_state.current_persona)
-st.write("You were talking with", st.session_state.previous_persona)
-
-
-#2.MANAGE CONVERSATION HISTORY
-
-conversation_reset = st.sidebar.button("Clear conversation")
-save_conversation = st.sidebar.button("Save conversation")
-
-if st.session_state.conversation_history != "":
-    st_write(st.session_state.conversation_history)
-
-if conversation_reset:
-    st.session_state.conversation_history = ""
-    st.experimental_rerun()
-
-if save_conversation:
-#save the conversation in a file adding Persona and time stamp to the name
-    import datetime
+def save_conversation():
     now = datetime.datetime.now()
-    filename = "Conversation " + st.session_state.current_persona + " " + now.strftime("%Y-%m-%d_%H-%M") + ".txt"
-#replace spaces with underscores
-    filename = filename.replace(" ", "_")
-    #check if documents folder exists if not create it
-    import os
+    filename = f"Conversation_{st.session_state.current_persona}_{now.strftime('%Y-%m-%d_%H-%M')}.txt"
     if not os.path.exists("documents"):
         os.makedirs("documents")
-    f = open("documents/"+filename, "w")
-    f.write(st.session_state.conversation_history)
-    f.close()
-
-    #upload the file to Azure blob storage
-    from azure_functions import uploadToBlobStorage
-    uploadToBlobStorage("documents/"+filename,filename)
-    
+    with open(f"documents/{filename}", "w") as f:
+        f.write(st.session_state.conversation_history)
+    uploadToBlobStorage(f"documents/{filename}", filename)
     st.write("Conversation saved in file", filename)
 
-#3.HAS THE USER ASKED A QUESTION?
+def handle_conversation_reset():
+    if st.sidebar.button("Clear conversation"):
+        st.session_state.conversation_history = ""
+        st.experimental_rerun()
 
-if st.session_state.current_persona != "":
-    question = st.text_input("Have anything to ask?", key="question_box")
- 
-else:
-    st.write("Please select a persona from the sidebar")
+def handle_save_conversation():
+    if st.sidebar.button("Save conversation"):
+        save_conversation()
 
-if persona != "" and question != "" and question != st.session_state.question:
-    st.session_state.question = question
-    if st.session_state.conversation_history == "":
-        full_context = "You are talking with "+persona+"\n"+ "You: "
-    else:
-        full_context = st.session_state.conversation_history+"\n \n"+"You: "
-
-    full_question=question+"\n"+persona+": "
-    answer=openai_conversation(context=full_context,question=full_question)
-    #delete the first 1 characters of the answer
-    answer=answer[1:]
-    st_write(answer)
-
-    #update the conversation history
-    st.session_state.conversation_history = st.session_state.conversation_history + "\n \n" + "You: " + question + "\n" + persona + ": " + answer
-    #st.write("CONVERSATION HISTORY: ", st.session_state.conversation_history)
-    st.experimental_rerun()
-
-
-#4.UPLOAD DOCUMENTS IF USER ASK TO DO SO
-
-if st.session_state.current_persona == "Jarvis":
-    st.write("Remember you can upload documents to the server and I will index them for you.")
-
-    from azure_functions import uploadToBlobStorage
-
-    load_documents = st.sidebar.button("Load documents")
-
-    if load_documents is True or st.session_state.load_document is True:
-        #ask user to select a file to upload
+def handle_load_documents():
+    if st.sidebar.button("Load documents"):
         uploaded_file = st.file_uploader("Choose a file")
         if uploaded_file is not None:
             uploaded_file_name = uploaded_file.name
-
-            #write the file to the server as binary
             with open(uploaded_file_name, 'wb') as f:
                 f.write(uploaded_file.getbuffer())
-
-            #copy the file to the azure blob storage
-            uploadToBlobStorage(uploaded_file_name,uploaded_file_name)
-
+            uploadToBlobStorage(uploaded_file_name, uploaded_file_name)
             st.write("File uploaded to the server")
             st.session_state.load_document = False
-
         else:
             st.session_state.load_document = True
 
-
-#5.LIST UPLOADED DOCUMENTS
-    st.write("Rembember you can also browse the documents already uploaded to the server.")
-
-    from azure_functions import listBlobs
-
-    review_documents = st.sidebar.button("List documents")
-    
-    if review_documents:
+def handle_review_documents():
+    if st.sidebar.button("List documents"):
         listBlobs()
+
+def st_write2(text):
+    new_text = text.replace("\n", "  \n")
+    st.write(new_text)
+    return
+
+# Initialize State
+initialize_state()
+
+def main():
+    st.title("Open AI chatbot")
+    persona = st.sidebar.selectbox("Select a persona", ["", "Leonardo Da Vinci", "Albert Einstein", "Nelson Mandela", "Martin Luther King", "Jarvis"])
+    context = f"This is a conversation between Me and {persona}."
+    conversation_history = st.session_state.conversation_history
+
+    if st.session_state.current_persona != persona:
+        st.session_state.previous_persona = st.session_state.current_persona
+        st.session_state.current_persona = persona
+
+    if st.session_state.current_persona:
+        st.write(f"You are talking with {st.session_state.current_persona}")
+    else:
+        st.write("Please select a persona from the sidebar")
+
+    handle_conversation_reset()
+    handle_save_conversation()
+
+    if st.session_state.conversation_history != "":
+        st_write2(st.session_state.conversation_history)
+
+    if st.session_state.current_persona:
+        question = st.text_input("Have anything to ask?", key="question_box")
+
+        if persona != "" and question != "" and question != st.session_state.question:
+            st.session_state.question = question
+
+            prompt = f"{context}\n\n{conversation_history}\n\nMe: {question}\n\n"
+            
+            answer = ai_complete(prompt, max_tokens=100, temperature=0.2)
+
+            answer_1 = answer.split("Me:")[0]
+
+            # Update the conversation history
+            st.session_state.conversation_history += f"\n\nMe: {question}\n\n{answer_1}"
+            st.experimental_rerun()
+
+
+    # Handle file uploading and document reviewing for Jarvis persona
+    if st.session_state.current_persona == "Jarvis":
+        st.write("Remember you can upload documents to the server and I will index them for you.")
+        handle_load_documents()
+        st.write("Remember you can also browse the documents already uploaded to the server.")
+        handle_review_documents()
+
+
+if __name__ == "__main__":
+    main()
