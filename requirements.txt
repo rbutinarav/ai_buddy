@@ -4,5 +4,7 @@ azure-core==1.18.0
 azure-storage-blob==12.9.0
 azure-cognitiveservices-speech==1.19.0
 datetime==4.3
-#dotenv==0.17.1
+python-dotenv==1.0.0
+
 #logging==0.5.1.2
+#dotenv==0.17.1
