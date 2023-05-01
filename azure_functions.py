@@ -69,8 +69,6 @@ def text_to_speech(text, voicetype="it-IT-IsabellaNeural"):
         print("Text-to-speech synthesis was canceled.")
 
 
-
-
 def text_to_speech_audio(text, voicetype="it-IT-IsabellaNeural"):
     subscription_key = st.secrets["AZURE_COGNITIVE_SERVICES_KEY"]
     region = os.getenv("AZURE_COGNITIVE_SERVICES_REGION")
@@ -88,9 +86,8 @@ def text_to_speech_audio(text, voicetype="it-IT-IsabellaNeural"):
         print("Text-to-speech synthesis completed.")
     elif result.reason == speechsdk.ResultReason.Canceled:
         print("Text-to-speech synthesis was canceled.")
+
        
-
-
 def detect_language(text):
 
     dotenv.load_dotenv()
@@ -108,9 +105,6 @@ def detect_language(text):
 
     return detected_language
 
-
-text_to_speech_audio("Ciao, come stai?")
-text_to_speech("Ciao, come stai?")
 
 
 
