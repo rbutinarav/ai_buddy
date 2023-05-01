@@ -103,7 +103,7 @@ def main():
             if use_voice:
                 #drop the {persona} from the answer
                 answer_2 = answer_1.split(": ")[1]
-                text_to_speech(answer_2)
+                text_to_speech_audio(answer_2)
    
             # Update the conversation history
             st.session_state.conversation_history += f"\n\nMe: {question}\n\n{answer_1}"
