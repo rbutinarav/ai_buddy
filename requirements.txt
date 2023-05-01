@@ -7,6 +7,5 @@ datetime==4.3
 python-dotenv==1.0.0
 openai==0.27.4
 
-#logging==0.5.1.2
-#dotenv==0.17.1
-
+#logging==0.5.1.2 already included in standard python package
+#dotenv==0.17.1 not used, python-dotenv is used instead

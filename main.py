@@ -2,7 +2,7 @@ import os
 import datetime
 import streamlit as st
 from openai_functions import ai_complete
-from azure_functions import uploadToBlobStorage, listBlobs
+from azure_functions import uploadToBlobStorage, listBlobs, text_to_speech
 
 # Define functions
 def initialize_state():
@@ -66,6 +66,10 @@ initialize_state()
 def main():
     st.title("Open AI chatbot")
     persona = st.sidebar.selectbox("Select a persona", ["", "Leonardo Da Vinci", "Albert Einstein", "Nelson Mandela", "Martin Luther King", "Jarvis"])
+
+    # Add a checkbox control to enable or disable voice
+    use_voice = st.sidebar.checkbox("Use voice", value=True)
+
     context = f"This is a conversation between Me and {persona}."
     conversation_history = st.session_state.conversation_history
 
@@ -96,6 +100,11 @@ def main():
 
             answer_1 = answer.split("Me:")[0]
 
+            if use_voice:
+                #drop the {persona} from the answer
+                answer_2 = answer_1.split(": ")[1]
+                text_to_speech(answer_2)
+   
             # Update the conversation history
             st.session_state.conversation_history += f"\n\nMe: {question}\n\n{answer_1}"
             st.experimental_rerun()
