@@ -1,5 +1,5 @@
 #%%
-def ai_complete(prompt='Hello', model='text-davinci-003', engine="gpt-35-turbo", temperature=0.2, max_tokens=30, verbose=False, api_type="openai"):
+def ai_complete(prompt='Hello', model='text-davinci-003', engine="gpt-35-turbo", temperature=0.2, max_tokens=30, verbose=False, api_type="azure"):
     """
     Returns a string with the completion of the prompt
     engine must match the deployment name on Azure
@@ -36,9 +36,8 @@ def ai_complete(prompt='Hello', model='text-davinci-003', engine="gpt-35-turbo",
         return prompt, response_text
     return response_text
 
-
 #EXAMPLES
-print("OPENAI:" , ai_complete("Il migliore amico dell'uomo è", verbose=False, api_type="openai", max_tokens=100))
-print("AZURE OPENAI (gpt-35-turbo)" , ai_complete("Il migliore amico dell'uomo è", verbose=False, api_type="azure", engine = "gpt-35-turbo", max_tokens=100))
-print("AZURE OPENAI (text-davinci-003)" , ai_complete("Il migliore amico dell'uomo è", verbose=False, api_type="azure", engine = "chat", max_tokens=100))
+#print("OPENAI:" , ai_complete("Il migliore amico dell'uomo è", verbose=False, api_type="openai", max_tokens=100))
+#print("AZURE OPENAI (gpt-35-turbo)" , ai_complete("Il migliore amico dell'uomo è", verbose=False, api_type="azure", engine = "gpt-35-turbo", max_tokens=100))
+#print("AZURE OPENAI (text-davinci-003)" , ai_complete("Il migliore amico dell'uomo è", verbose=False, api_type="azure", engine = "chat", max_tokens=100))
 

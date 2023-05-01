@@ -1,12 +1,21 @@
+import dotenv
+import os
+import streamlit as st
+from azure.ai.textanalytics import TextAnalyticsClient
+from azure.core.credentials import AzureKeyCredential
+from azure.storage.blob import BlobServiceClient
+import azure.cognitiveservices.speech as speechsdk
+
+
+dotenv.load_dotenv()
+
+
 def uploadToBlobStorage(file_path,file_name):
 
     #import the libraries for managing the azure blob storage
     from azure.storage.blob import BlobServiceClient
 
     #load env variables from .env file
-    import dotenv
-    import os
-    dotenv.load_dotenv()
     container_name = os.getenv("AZURE_STORAGE_CONTAINER_NAME")
 
     #add env variables from .secrets.toml file
@@ -21,15 +30,12 @@ def uploadToBlobStorage(file_path,file_name):
 
 #uploadToBlobStorage("azure_functions.py","azure_functions.py")
 
+
 def listBlobs():
     #import the libraries for managing the azure blob storage
-    from azure.storage.blob import BlobServiceClient
+
 
     #load env variables from .env file
-    import dotenv
-    import os
-    import streamlit as st
-    dotenv.load_dotenv()
     container_name = os.getenv("AZURE_STORAGE_CONTAINER_NAME")
 
     #add env variables from .secrets.toml file
@@ -43,9 +49,45 @@ def listBlobs():
     blob_list = container_client.list_blobs()
     for blob in blob_list:
         st.write("t" + blob.name)
-        
 
 
+def text_to_speech(text, voicetype="it-IT-IsabellaNeural"):
+    subscription_key = st.secrets["AZURE_COGNITIVE_SERVICES_KEY"]
+    region = os.getenv("AZURE_COGNITIVE_SERVICES_REGION")
 
+    speech_config = speechsdk.SpeechConfig(subscription=subscription_key, region=region)
+ 
+    speech_config.speech_synthesis_voice_name = voicetype
+
+    speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config)
+
+    result = speech_synthesizer.speak_text_async(text).get()
+
+    if result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
+        print("Text-to-speech synthesis completed.")
+    elif result.reason == speechsdk.ResultReason.Canceled:
+        print("Text-to-speech synthesis was canceled.")
+
+
+def detect_language(text):
+
+    dotenv.load_dotenv()
+    subscription_key = st.secrets["AZURE_COGNITIVE_SERVICES_KEY"]
+    endpoint = os.getenv("AZURE_COGNITIVE_SERVICES_ENDPOINT")
+
+    # Create the Text Analytics client
+    client = TextAnalyticsClient(endpoint, AzureKeyCredential(subscription_key))
+
+    # Perform language detection
+    response = client.detect_language(documents=[text])[0]
+
+    # Get the detected language
+    detected_language = response.primary_language.iso6391_name
+
+    return detected_language
+
+
+##there should be a way to get a wave file from text to speech and then play it separately, thus avoiding the deployment issues with text_to_speech library
+##this is still to be developed, so text to speech only works locally
 
     

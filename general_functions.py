@@ -1,11 +1,9 @@
-'''This is a collection of functions that do not interact directly with OpenAI API'''
+import pandas as pd
+import json
+import wave
+import pyaudio
 
 def json_to_df (file_name):
-    '''This function is used to import json text file into a pandas dataframe'''
-
-    import pandas as pd
-    import json
-    
     # Opening JSON file
     json_file = open(file_name)
     json_dict = json.load(json_file)
@@ -15,5 +13,22 @@ def json_to_df (file_name):
     # Closing file
     json_file.close()
     return json_df
+
+
+def play_wav_file(wav_file):   #this function has to be tested
+    CHUNK = 1024
+    wf = wave.open(wav_file, 'rb')
+    p = pyaudio.PyAudio()
+    stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
+                    channels=wf.getnchannels(),
+                    rate=wf.getframerate(),
+                    output=True)
+    data = wf.readframes(CHUNK)
+    while data:
+        stream.write(data)
+        data = wf.readframes(CHUNK)
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
 
 
