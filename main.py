@@ -2,7 +2,7 @@ import os
 import datetime
 import streamlit as st
 from openai_functions import ai_complete
-from azure_functions import uploadToBlobStorage, listBlobs, text_to_speech
+from azure_functions import uploadToBlobStorage, listBlobs, text_to_speech, text_to_speech_audio
 
 # Define functions
 def initialize_state():
