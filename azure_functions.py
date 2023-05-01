@@ -5,7 +5,6 @@ from azure.ai.textanalytics import TextAnalyticsClient
 from azure.core.credentials import AzureKeyCredential
 from azure.storage.blob import BlobServiceClient
 import azure.cognitiveservices.speech as speechsdk
-import logging
 
 dotenv.load_dotenv()
 
@@ -70,8 +69,6 @@ def text_to_speech(text, voicetype="it-IT-IsabellaNeural"):
 
 
 def detect_language(text):
-    # Suppress the detailed logs from the Azure SDK
-    logging.getLogger('azure').setLevel(logging.ERROR)
 
     dotenv.load_dotenv()
     subscription_key = st.secrets["AZURE_COGNITIVE_SERVICES_KEY"]
