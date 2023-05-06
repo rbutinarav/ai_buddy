@@ -1,0 +1,2 @@
+1-resume authentication module + azure functions (read/write) > adapt main to create loging from
+
