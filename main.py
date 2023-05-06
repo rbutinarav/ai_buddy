@@ -14,19 +14,10 @@ def initialize_state():
         if var not in st.session_state:
             st.session_state[var] = ""
 
-def st_write2(text):
-    new_text = text.replace("\n", "<br>")
-    st.markdown(new_text, unsafe_allow_html=True)
-    return
-
 def save_conversation():
     now = datetime.datetime.now()
     filename = f"Conversation_{st.session_state.current_persona}_{now.strftime('%Y-%m-%d_%H-%M')}.txt"
-    if not os.path.exists("documents"):
-        os.makedirs("documents")
-    with open(f"documents/{filename}", "w") as f:
-        f.write(st.session_state.conversation_history)
-    uploadToBlobStorage(f"documents/{filename}", filename)
+    uploadToBlobStorage("documents",filename,st.session_state.conversation_history)
     st.write("Conversation saved in file", filename)
 
 def handle_conversation_reset():
@@ -55,11 +46,6 @@ def handle_review_documents():
     if st.sidebar.button("List documents"):
         listBlobs()
 
-def st_write2(text):
-    new_text = text.replace("\n", "  \n")
-    st.write(new_text)
-    return
-
 # Initialize State
 initialize_state()
 
@@ -86,7 +72,7 @@ def main():
     handle_save_conversation()
 
     if st.session_state.conversation_history != "":
-        st_write2(st.session_state.conversation_history)
+        st.write(st.session_state.conversation_history)
 
     if st.session_state.current_persona:
         question = st.text_input("Have anything to ask?", key="question_box")
