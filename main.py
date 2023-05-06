@@ -17,7 +17,7 @@ def initialize_state():
 def save_conversation():
     now = datetime.datetime.now()
     filename = f"Conversation_{st.session_state.current_persona}_{now.strftime('%Y-%m-%d_%H-%M')}.txt"
-    uploadToBlobStorage("documents",filename,st.session_state.conversation_history)
+    uploadToBlobStorage("conversations",filename,st.session_state.conversation_history)
     st.write("Conversation saved in file", filename)
 
 def handle_conversation_reset():
