@@ -62,14 +62,16 @@ def getBlob(blob_path, blob_name):
     connection_string = st.secrets["AZURE_STORAGE_CONNECTION_STRING"]
 
     blob_service_client = BlobServiceClient.from_connection_string(connection_string)
-    container_client = blob_service_client.get_container_client(container_name)
    
     # Get the BlobClient for the specified blob
     blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_path+"/"+blob_name)
 
     # Download the content of the blob
-    blob_content = blob_client.download_blob()
-
+    try:
+        blob_content = blob_client.download_blob()
+    except:
+        blob_content = False
+        
     return blob_content
 
 

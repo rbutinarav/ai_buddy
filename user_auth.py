@@ -57,10 +57,12 @@ def user_login():
                 log_user_access(user_name, "success")
                 login_success = True
             else:
-                #st.write("Wrong user or password")
+                st.write("Wrong user or password")  #wrong password, message say wrong user or password to incresase security
                 log_user_access(user_name, "fail")
                 login_success = False
-    
+        else:
+            st.write("Wrong user or password")  #User not found, message say wrong user or password to incresase security
+
         return user_name, login_success
     
     else:
