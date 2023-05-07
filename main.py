@@ -53,7 +53,7 @@ def handle_review_documents():
 initialize_state()
 
 def main():
-    st.title("Open AI chatbot")
+    st.title("AI Buddy")
     #check if user is logged in
 
     if st.session_state.login_success == '':
