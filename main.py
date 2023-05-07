@@ -44,7 +44,7 @@ def handle_load_documents():
 
 def handle_review_documents():
     if st.sidebar.button("List documents"):
-        listBlobs()
+        st.write("These are the last 50 conversations:\n",listBlobs(("conversations"), "", 50)) #currently not sorting by date
 
 # Initialize State
 initialize_state()
