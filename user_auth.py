@@ -39,6 +39,7 @@ def log_user_access(user_name, login_success):
 
 def user_login():
     login_success = False #initialize login success
+    #user_name = "Unknown" #initialize user name
     #ask for user name and password
     st.write("Welcome, please enter your credentials:")
     st.write("This app is still experimental, if you need a user_id, please contact the administrator: roberto.butinar@gmail.com")
@@ -52,15 +53,18 @@ def user_login():
         if user:
             user_json = json.loads(user.content_as_text())
             if user_json[user_name]["password"] == user_password:
-                st.write("User logged in")
+                #st.write("User logged in")
                 log_user_access(user_name, "success")
                 login_success = True
             else:
-                st.write("Wrong user or password")
+                #st.write("Wrong user or password")
                 log_user_access(user_name, "fail")
                 login_success = False
     
         return user_name, login_success
+    
+    else:
+        return "unknown", False
 
 def add_user():
     return

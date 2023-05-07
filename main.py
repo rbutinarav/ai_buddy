@@ -11,7 +11,7 @@ def initialize_state():
     session_vars = [
         "conversation_history", "current_persona", "previous_persona",
         "reset_history", "question", "question_box", "load_document",
-        "user_name", "user_login"
+        "user_name", "login_success"
     ]
     for var in session_vars:
         if var not in st.session_state:
@@ -55,16 +55,19 @@ initialize_state()
 def main():
     st.title("Open AI chatbot")
     #check if user is logged in
-    
-    if st.session_state.user_login == "" or False:
-        st.session_state.user_name, st.session_state.user_login = user_login()
-        #st.session_state.user_login = True
-        #experimental rerun to update the page
 
-    else:
-        #st.write("Welcome", st.session_state.user_name)
-        #st.write("User login", st.session_state.user_login)
+    if st.session_state.login_success == '':
+        user_name, login_success = user_login()
+        if login_success:
+            st.session_state.login_success = login_success
+            st.session_state.user_name = user_name
+            st.write(user_name, "-", login_success)
+            #rerun app
+            st.experimental_rerun()
     
+    elif st.session_state.login_success:
+        st.write('Welcome: ', st.session_state.user_name)
+
         persona = st.sidebar.selectbox("Select a persona", ["", "Leonardo Da Vinci", "Albert Einstein", "Nelson Mandela", "Martin Luther King", "Jarvis"])
 
         # Add a checkbox control to enable or disable voice
