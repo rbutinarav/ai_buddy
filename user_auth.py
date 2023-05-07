@@ -1,6 +1,7 @@
 import streamlit as st
 from azure_functions import listBlobs, getBlob, uploadToBlobStorage
 import json
+import datetime
 
 #backend functions
 
@@ -23,6 +24,17 @@ def get_user(user_name):
 def modify_user():
     return
 
+def log_user_access(user_name, login_success):
+    #create a json file, name of the json is the user_email + timestamp + login_success
+    timestamp = datetime.datetime.now()
+    #convert timestamp to string
+    timestamp = timestamp.strftime("%Y%m%d%H%M%S")
+    user_dict = {"user_name": user_name, "login_success": login_success, "timestamp": timestamp}
+    blob_name = user_name + "_" + str(timestamp) + "_" + str(login_success) + ".json"
+    user = json.dumps({user_name: user_dict})
+    uploadToBlobStorage("logins", blob_name, str(user))
+    return
+
 ## interactive function
 
 def user_login():
@@ -38,8 +50,10 @@ def user_login():
             user_json = json.loads(user.content_as_text())
             if user_json[user_name]["password"] == user_password:
                 st.write("User logged in")
+                log_user_access(user_name, "success")
             else:
                 st.write("Wrong user or password")
+                log_user_access(user_name, "fail")
     return
 
 def add_user():
