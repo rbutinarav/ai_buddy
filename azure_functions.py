@@ -75,7 +75,7 @@ def getBlob(blob_path, blob_name):
     return blob_content
 
 
-def text_to_speech(text, voicetype="it-IT-IsabellaNeural"):
+def text_to_speech(text, voicetype="it-IT-IsabellaNeural", ssml=False):
     subscription_key = st.secrets["AZURE_COGNITIVE_SERVICES_KEY"]
     region = os.getenv("AZURE_COGNITIVE_SERVICES_REGION")
 
@@ -85,7 +85,10 @@ def text_to_speech(text, voicetype="it-IT-IsabellaNeural"):
 
     speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config)
 
-    result = speech_synthesizer.speak_text_async(text).get()
+    if ssml:
+       result = speech_synthesizer.speak_ssml_async(text).get() ##currently not working properly
+    else: 
+        result = speech_synthesizer.speak_text_async(text).get()
 
     if result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
         print("Text-to-speech synthesis completed.")

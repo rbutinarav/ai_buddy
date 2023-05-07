@@ -55,5 +55,10 @@ markup_text = ai_complete(full_text, max_tokens=100, api_type="azure", engine = 
 
 st.write (full_text, markup_text)
 
+text_to_speech("This should sound more natural, as I applied some markup tags to the text", assigned_voice_id)
+
+text_to_speech(markup_text, assigned_voice_id, ssml=True)
+
+
 
 
