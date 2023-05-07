@@ -1,3 +1,9 @@
+## Try the Online Version (Develop)
+
+If you're interested in trying out the online version of AI Buddy, please visit: [ai-buddy.streamlit.app](https://ai-buddy.streamlit.app)
+
+To request a user ID, simply drop us an email, and we'll provide you with the necessary credentials.
+
 # AI Buddy
 
 Welcome to AI Buddy, a chatbot built with OpenAI, Python, and Streamlit. AI Buddy can interact with you using different personas, including historical figures like Leonardo Da Vinci, Albert Einstein, and Nelson Mandela. The chatbot is also able to remember past conversations and speak with its own voice. 
@@ -36,3 +42,4 @@ Contributions are welcome! If you have any suggestions or want to report a bug, 
 ## License
 
 This project is licensed under the MIT License. See `LICENSE` for more information.
+
