@@ -41,6 +41,8 @@ def user_login():
     login_success = False #initialize login success
     #ask for user name and password
     st.write("Welcome, please enter your credentials:")
+    st.write("This app is still experimental, if you need a user_id, please contact the administrator: roberto.butinar@gmail.com")
+
     user_name=st.text_input("Enter user name")
     user_password=st.text_input("Enter user password")
     #add user button

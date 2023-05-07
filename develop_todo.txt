@@ -1,2 +1,4 @@
-1-resume authentication module + azure functions (read/write) > adapt main to create loging from
+1-fix the authentication issues (too much error messages)
+2-?create a domain for ai-buddy (website, email)
+3-move on with the speech rendering
 
