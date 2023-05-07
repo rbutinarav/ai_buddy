@@ -38,6 +38,7 @@ def log_user_access(user_name, login_success):
 ## interactive function
 
 def user_login():
+    login_success = False #initialize login success
     #ask for user name and password
     st.write("Welcome, please enter your credentials:")
     user_name=st.text_input("Enter user name")
@@ -51,10 +52,13 @@ def user_login():
             if user_json[user_name]["password"] == user_password:
                 st.write("User logged in")
                 log_user_access(user_name, "success")
+                login_success = True
             else:
                 st.write("Wrong user or password")
                 log_user_access(user_name, "fail")
-    return
+                login_success = False
+    
+        return user_name, login_success
 
 def add_user():
     return

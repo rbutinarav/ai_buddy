@@ -3,12 +3,15 @@ import datetime
 import streamlit as st
 from openai_functions import ai_complete
 from azure_functions import uploadToBlobStorage, listBlobs, text_to_speech
+from user_auth import create_user, get_user, modify_user, user_login, add_user
+import time
 
 # Define functions
 def initialize_state():
     session_vars = [
         "conversation_history", "current_persona", "previous_persona",
-        "reset_history", "question", "question_box", "load_document"
+        "reset_history", "question", "question_box", "load_document",
+        "user_name", "user_login"
     ]
     for var in session_vars:
         if var not in st.session_state:
@@ -51,57 +54,68 @@ initialize_state()
 
 def main():
     st.title("Open AI chatbot")
-    persona = st.sidebar.selectbox("Select a persona", ["", "Leonardo Da Vinci", "Albert Einstein", "Nelson Mandela", "Martin Luther King", "Jarvis"])
+    #check if user is logged in
+    
+    if st.session_state.user_login == "" or False:
+        st.session_state.user_name, st.session_state.user_login = user_login()
+        #st.session_state.user_login = True
+        #experimental rerun to update the page
 
-    # Add a checkbox control to enable or disable voice
-    use_voice = st.sidebar.checkbox("Use voice", value=True)
-
-    context = f"This is a conversation between Me and {persona}."
-    conversation_history = st.session_state.conversation_history
-
-    if st.session_state.current_persona != persona:
-        st.session_state.previous_persona = st.session_state.current_persona
-        st.session_state.current_persona = persona
-
-    if st.session_state.current_persona:
-        st.write(f"You are talking with {st.session_state.current_persona}")
     else:
-        st.write("Please select a persona from the sidebar")
+        #st.write("Welcome", st.session_state.user_name)
+        #st.write("User login", st.session_state.user_login)
+    
+        persona = st.sidebar.selectbox("Select a persona", ["", "Leonardo Da Vinci", "Albert Einstein", "Nelson Mandela", "Martin Luther King", "Jarvis"])
 
-    handle_conversation_reset()
-    handle_save_conversation()
+        # Add a checkbox control to enable or disable voice
+        use_voice = st.sidebar.checkbox("Use voice", value=True)
 
-    if st.session_state.conversation_history != "":
-        st.write(st.session_state.conversation_history)
+        context = f"This is a conversation between Me and {persona}."
+        conversation_history = st.session_state.conversation_history
 
-    if st.session_state.current_persona:
-        question = st.text_input("Have anything to ask?", key="question_box")
+        if st.session_state.current_persona != persona:
+            st.session_state.previous_persona = st.session_state.current_persona
+            st.session_state.current_persona = persona
 
-        if persona != "" and question != "" and question != st.session_state.question:
-            st.session_state.question = question
+        if st.session_state.current_persona:
+            st.write(f"You are talking with {st.session_state.current_persona}")
+        else:
+            st.write("Please select a persona from the sidebar")
 
-            prompt = f"{context}\n\n{conversation_history}\n\nMe: {question}\n\n"
-            
-            answer = ai_complete(prompt, max_tokens=100, temperature=0.2)
+        handle_conversation_reset()
+        handle_save_conversation()
 
-            answer_1 = answer.split("Me:")[0]
+        if st.session_state.conversation_history != "":
+            st.write(st.session_state.conversation_history)
 
-            if use_voice:
-                #drop the {persona} from the answer
-                answer_2 = answer_1.split(": ")[1]
-                text_to_speech(answer_2)
-   
-            # Update the conversation history
-            st.session_state.conversation_history += f"\n\nMe: {question}\n\n{answer_1}"
-            st.experimental_rerun()
+        if st.session_state.current_persona:
+            question = st.text_input("Have anything to ask?", key="question_box")
+
+            if persona != "" and question != "" and question != st.session_state.question:
+                st.session_state.question = question
+
+                prompt = f"{context}\n\n{conversation_history}\n\nMe: {question}\n\n"
+                
+                answer = ai_complete(prompt, max_tokens=100, temperature=0.2)
+
+                answer_1 = answer.split("Me:")[0]
+
+                if use_voice:
+                    #drop the {persona} from the answer
+                    answer_2 = answer_1.split(": ")[1]
+                    text_to_speech(answer_2)
+    
+                # Update the conversation history
+                st.session_state.conversation_history += f"\n\nMe: {question}\n\n{answer_1}"
+                st.experimental_rerun()
 
 
-    # Handle file uploading and document reviewing for Jarvis persona
-    if st.session_state.current_persona == "Jarvis":
-        st.write("Remember you can upload documents to the server and I will index them for you.")
-        handle_load_documents()
-        st.write("Remember you can also browse the documents already uploaded to the server.")
-        handle_review_documents()
+        # Handle file uploading and document reviewing for Jarvis persona
+        if st.session_state.current_persona == "Jarvis":
+            st.write("Remember you can upload documents to the server and I will index them for you.")
+            handle_load_documents()
+            st.write("Remember you can also browse the documents already uploaded to the server.")
+            handle_review_documents()
 
 
 if __name__ == "__main__":
