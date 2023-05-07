@@ -7,6 +7,11 @@ from azure.storage.blob import BlobServiceClient
 import azure.cognitiveservices.speech as speechsdk
 
 
+#AZURE FUNCTIONS: listBlobs does not get the path (check also how it is called by main.py)
+#AZURE FUNCTIONS: get blob function still to be implemented
+#Subsequent user loging will have to be implemented
+
+
 dotenv.load_dotenv()
 
 
@@ -22,25 +27,26 @@ def uploadToBlobStorage(blob_path, file_name, file_contents):
     blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_path+"/"+file_name)
 
     # Upload the file contents directly to blob storage
-    blob_client.upload_blob(file_contents, blob_type="BlockBlob")
+    blob_client.upload_blob(file_contents, blob_type="BlockBlob", overwrite=True)
 
 
-
-def listBlobs():
-    #import the libraries for managing the azure blob storage
-
-    #load env variables from .env file
+def listBlobs(blob_path, filter="", max_results=10):
+    
+    # load env variables from .env file
     container_name = os.getenv("AZURE_STORAGE_CONTAINER_NAME")
 
-    #storage_account_key = streamlit.secrets["AZURE_STORAGE_KEY"]
+    # add env variables from .secrets.toml file
     connection_string = st.secrets["AZURE_STORAGE_CONNECTION_STRING"]
 
     blob_service_client = BlobServiceClient.from_connection_string(connection_string)
     container_client = blob_service_client.get_container_client(container_name)
 
-    blob_list = container_client.list_blobs()
-    for blob in blob_list:
-        st.write("t" + blob.name)
+    blob_list = container_client.list_blobs(prefix=blob_path)
+    blob_path_filter = blob_path + "/" + filter
+
+    filtered_list = [blob.name for blob in blob_list if blob.name.startswith(blob_path_filter)]
+
+    return filtered_list[:max_results]
 
 
 def text_to_speech(text, voicetype="it-IT-IsabellaNeural"):
