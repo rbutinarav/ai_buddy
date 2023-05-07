@@ -1,8 +1,10 @@
 #%%
-def ai_complete(prompt='Hello', model='text-davinci-003', engine="gpt-35-turbo", temperature=0.2, max_tokens=30, verbose=False, api_type="azure"):
+def ai_complete(prompt='Hello', model='text-davinci-003', engine="gpt-35-turbo", temperature=0.7, max_tokens=30, verbose=False, api_type="azure"):
     """
     Returns a string with the completion of the prompt
     engine must match the deployment name on Azure
+    engine="gpt-35-turbo" is more verbose and conversational
+    engine="chat" is more concise and factual - chat should be renamed in text-davinci-003
     """
     import openai
     import streamlit as st
@@ -25,7 +27,7 @@ def ai_complete(prompt='Hello', model='text-davinci-003', engine="gpt-35-turbo",
     else :    
         openai.api_key = st.secrets["OPENAI_KEY"]
         
-        response_json = openai.Completion.create(model=model, prompt=prompt, temperature=temperature, max_tokens=max_tokens) #this works with OpenAI
+        response_json = openai.Completion.create(model=model, engine=engine, prompt=prompt, temperature=temperature, max_tokens=max_tokens) #this works with OpenAI
         
 
     #print(type(response))  
