@@ -2,7 +2,6 @@ import streamlit as st
 from audio_recorder_streamlit import audio_recorder
 import azure.cognitiveservices.speech as speechsdk
 import os
-import requests
 import dotenv
 
 dotenv.load_dotenv()
@@ -33,8 +32,6 @@ def speech_to_text():
         if cancellation_details.reason == speechsdk.CancellationReason.Error:
             print("Error details: {}".format(cancellation_details.error_details))
             print("Did you set the speech resource key and region values?")
-
-#speech_to_text()
 
 def speech_to_text_st():
     # This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
@@ -73,13 +70,4 @@ def speech_play_audio():
     if audio_bytes:
         st.audio(audio_bytes, format="audio/wav")
 
-speech_play_audio
-
-
-
-#st.write("Click the button below to transcribe the audio")
-#if st.button("Transcribe"):
-#    st.write("Transcribing...")
-#    wav_to_text("audio_files/audio_file_2023-05-09-10-35-21.wav")
-#    st.write("Done!")
-
+speech_play_audio()
