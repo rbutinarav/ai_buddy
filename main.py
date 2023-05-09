@@ -2,10 +2,9 @@ import os
 import datetime
 import streamlit as st
 from openai_functions import ai_complete
-from azure_functions import uploadToBlobStorage, listBlobs, text_to_speech, text_to_speech_st
+from azure_functions import uploadToBlobStorage, listBlobs, text_to_speech, text_to_speech_st, detect_language
 from user_auth import create_user, get_user, modify_user, user_login, add_user
-import time
-import wait
+
 
 # Define functions
 def initialize_state():
@@ -50,6 +49,28 @@ def handle_review_documents():
     if st.sidebar.button("List documents"):
         st.write("These are the last 50 conversations:\n",listBlobs(("conversations"), "", 50)) #currently not sorting by date
 
+def assign_voice(persona, text):
+
+    voices = {'Leonardo Da Vinci - English': 'en-US-GuyNeural', 'Leonardo Da Vinci - Italian': 'it-IT-DiegoNeural',
+            'Albert Einstein - English': 'en-US-GuyNeural', 'Albert Einstein - Italian': 'it-IT-DiegoNeural',
+            'Nelson Mandela - English': 'en-US-GuyNeural', 'Nelson Mandela - Italian': 'it-IT-DiegoNeural',
+            'Jarvis - English': 'en-US-GuyNeural', 'Jarvis - Italian': 'it-IT-DiegoNeural',
+            'Lady - English': 'en-US-AriaNeural', 'Lady - Italian': 'it-IT-IsabellaNeural'}
+
+    available_voices = list(voices.keys())
+
+    #detect language from the text
+    language = detect_language(text)
+
+    languages_dictionary = {'it': 'Italian', 'en': 'English'}
+    language_long = languages_dictionary[language]
+
+    assigned_voice = persona + " - " + language_long
+    assigned_voice_id = voices[assigned_voice]
+
+    return assigned_voice_id
+
+
 # Initialize State
 initialize_state()
 
@@ -69,7 +90,7 @@ def main():
     elif st.session_state.login_success:
         st.write('Welcome: ', st.session_state.user_name)
 
-        persona = st.sidebar.selectbox("Select a persona", ["", "Leonardo Da Vinci", "Albert Einstein", "Nelson Mandela", "Martin Luther King", "Jarvis"])
+        persona = st.sidebar.selectbox("Select a persona", ["", "Leonardo Da Vinci", "Albert Einstein", "Nelson Mandela", "Martin Luther King", "Jarvis", "Lady"])
 
         # Add a checkbox control to enable or disable voice
         use_voice = st.sidebar.checkbox("Use voice", value=False)
@@ -113,13 +134,15 @@ def main():
                 if use_voice:
                     #drop the {persona} from the answer
                     answer_2 = answer_1.split(": ")[1]
-                    text_to_speech(answer_2)
+                    voice_type = assign_voice(persona, answer_2)
+                    text_to_speech(answer_2, voice_type)
                     st.experimental_rerun()
                 
                 if use_voice_st:
                     #drop the {persona} from the answer
                     answer_2 = answer_1.split(": ")[1]
-                    text_to_speech_st(answer_2)
+                    voice_type = assign_voice(persona, answer_2)
+                    text_to_speech_st(answer_2, voice_type)
                 
                 else:
                     st.experimental_rerun()
