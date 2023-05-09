@@ -135,5 +135,5 @@ def text_to_speech_dev(text, voicetype="it-IT-IsabellaNeural", use_speaker=False
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         #create a unique filename for audio file using datetime
         #filename = "audio_files/audio_file_"+timestamp+".wav"
-        filename = "audio_file_"+timestamp+".wav
+        filename = "audio_file_"+timestamp+".wav"
         stream.save_to_wav_file(filename) #syncrhonously
