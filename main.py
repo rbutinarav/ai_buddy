@@ -68,9 +68,13 @@ if audio_bytes:
     st.audio(audio_bytes, format="audio/wav")
 #converts audio to text
 #write audio_bytes to a file called "speech.wav"
-if audio_bytes is not None:
-    with open("speech.wav", "wb") as f:
-        f.write(audio_bytes)
+#ask the user to click a button to trigger speech translation
+if audio_bytes:
+    translate = st.button("Click the button below to translate your speech to text")
 
-    text = speech_to_text("speech.wav")
-    st.write('This is what you said: ', text)
+    if translate:
+        with open("speech.wav", "wb") as f:
+            f.write(audio_bytes)
+
+        text = speech_to_text("speech.wav")
+        st.write('This is what you said: ', text)
