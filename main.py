@@ -48,7 +48,7 @@ st.write ("Assigned voice: ", assigned_voice)
 st.write ("Assigned voice id: ", assigned_voice_id)
 
 #text_to_speech_dev(text, assigned_voice_id, use_speaker=True)
-text_to_speech_st (text, assigned_voice_id, use_speaker=False)
+text_to_speech_st (text, assigned_voice_id)
 #text_to_speech(text, assigned_voice_id)
 
 #make a revised text appling SSML tags
