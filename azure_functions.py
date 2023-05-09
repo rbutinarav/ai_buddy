@@ -76,19 +76,19 @@ def getBlob(blob_path, blob_name):
 
 
 def text_to_speech(text, voicetype="it-IT-IsabellaNeural", ssml=False):
+
     subscription_key = st.secrets["AZURE_COGNITIVE_SERVICES_KEY"]
     region = os.getenv("AZURE_COGNITIVE_SERVICES_REGION")
 
     speech_config = speechsdk.SpeechConfig(subscription=subscription_key, region=region)
- 
     speech_config.speech_synthesis_voice_name = voicetype
 
     speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config)
 
-    if ssml:
-       result = speech_synthesizer.speak_ssml_async(text).get() ##currently not working properly
-    else: 
+    if ssml == False:
         result = speech_synthesizer.speak_text_async(text).get()
+    else:
+        result = speech_synthesizer.speak_ssml_async(text).get() ##currently not working properly
 
     if result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
         print("Text-to-speech synthesis completed.")
@@ -98,7 +98,6 @@ def text_to_speech(text, voicetype="it-IT-IsabellaNeural", ssml=False):
 
 def detect_language(text):
 
-    dotenv.load_dotenv()
     subscription_key = st.secrets["AZURE_COGNITIVE_SERVICES_KEY"]
     endpoint = os.getenv("AZURE_COGNITIVE_SERVICES_ENDPOINT")
 
@@ -114,7 +113,26 @@ def detect_language(text):
     return detected_language
 
 
-##there should be a way to get a wave file from text to speech and then play it separately, thus avoiding the deployment issues with text_to_speech library
-##this is still to be developed, so text to speech only works locally
-
+def text_to_speech_dev(text, voicetype="it-IT-IsabellaNeural", use_speaker=False):
+#using memory stream, working only for producing audio files, currently does not stream to speaker
     
+    subscription_key = st.secrets["AZURE_COGNITIVE_SERVICES_KEY"]
+    region = os.getenv("AZURE_COGNITIVE_SERVICES_REGION")
+
+    speech_config = speechsdk.SpeechConfig(subscription=subscription_key, region=region)
+    speech_config.speech_synthesis_voice_name = voicetype
+
+    speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=None)
+    result = speech_synthesizer.speak_text_async(text).get()
+    stream = speechsdk.AudioDataStream(result)
+
+    if use_speaker:
+        audio_config = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)
+        speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)
+        stream.read_data
+    else:
+        #create a date-time-stamped
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        #create a unique filename for audio file using datetime
+        filename = "audio_files/audio_file_"+timestamp+".wav"
+        stream.save_to_wav_file(filename) #syncrhonously

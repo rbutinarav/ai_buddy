@@ -1,5 +1,7 @@
 .streamlit/secrets.toml
 __pycache__
+audio_files
+audio_file*
 documents
 loaddocs.py
 output
