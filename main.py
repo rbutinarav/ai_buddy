@@ -1,80 +1,159 @@
-import streamlit as st
-from audio_recorder_streamlit import audio_recorder
-import azure.cognitiveservices.speech as speechsdk
 import os
-import dotenv
+import datetime
+import streamlit as st
+from openai_functions import ai_complete
+from azure_functions import uploadToBlobStorage, listBlobs, text_to_speech, text_to_speech_st, detect_language
+from user_auth import create_user, get_user, modify_user, user_login, add_user
 
-dotenv.load_dotenv()
+#
+# Define functions
+def initialize_state():
+    session_vars = [
+        "conversation_history", "current_persona", "previous_persona",
+        "reset_history", "question", "question_box", "load_document",
+        "user_name", "login_success"
+    ]
+    for var in session_vars:
+        if var not in st.session_state:
+            st.session_state[var] = ""
 
-def record_speech_to_text_st():
-    # This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
-    # Does not work on streamlit server
+def save_conversation():
+    now = datetime.datetime.now()
+    filename = f"Conversation_{st.session_state.current_persona}_{now.strftime('%Y-%m-%d_%H-%M')}.txt"
+    uploadToBlobStorage("conversations",filename,st.session_state.conversation_history)
+    st.write("Conversation saved in file", filename)
 
-    subscription_key = st.secrets["AZURE_COGNITIVE_SERVICES_KEY"]
-    region = os.getenv("AZURE_COGNITIVE_SERVICES_REGION")
+def handle_conversation_reset():
+    if st.sidebar.button("Clear conversation"):
+        st.session_state.conversation_history = ""
+        st.experimental_rerun()
+
+def handle_save_conversation():
+    if st.sidebar.button("Save conversation"):
+        save_conversation()
+
+def handle_load_documents():
+    if st.sidebar.button("Load documents"):
+        uploaded_file = st.file_uploader("Choose a file")
+        if uploaded_file is not None:
+            uploaded_file_name = uploaded_file.name
+            with open(uploaded_file_name, 'wb') as f:
+                f.write(uploaded_file.getbuffer())
+            uploadToBlobStorage(uploaded_file_name, uploaded_file_name)
+            st.write("File uploaded to the server")
+            st.session_state.load_document = False
+        else:
+            st.session_state.load_document = True
+
+def handle_review_documents():
+    if st.sidebar.button("List documents"):
+        st.write("These are the last 50 conversations:\n",listBlobs(("conversations"), "", 50)) #currently not sorting by date
+
+def assign_voice(persona, text):
+
+    voices = {'Leonardo Da Vinci - English': 'en-US-GuyNeural', 'Leonardo Da Vinci - Italian': 'it-IT-DiegoNeural',
+            'Albert Einstein - English': 'en-US-GuyNeural', 'Albert Einstein - Italian': 'it-IT-DiegoNeural',
+            'Nelson Mandela - English': 'en-US-GuyNeural', 'Nelson Mandela - Italian': 'it-IT-DiegoNeural',
+            'Jarvis - English': 'en-US-GuyNeural', 'Jarvis - Italian': 'it-IT-DiegoNeural',
+            'Lady - English': 'en-US-AriaNeural', 'Lady - Italian': 'it-IT-IsabellaNeural'}
+
+    available_voices = list(voices.keys())
+
+    #detect language from the text
+    language = detect_language(text)
+
+    languages_dictionary = {'it': 'Italian', 'en': 'English'}
+    language_long = languages_dictionary[language]
+
+    assigned_voice = persona + " - " + language_long
+    assigned_voice_id = voices[assigned_voice]
+
+    return assigned_voice_id
+
+
+# Initialize State
+initialize_state()
+
+def main():
+    st.title("AI Buddy")
+    #check if user is logged in
+
+    if st.session_state.login_success == '':
+        user_name, login_success = user_login()
+        if login_success:
+            st.session_state.login_success = login_success
+            st.session_state.user_name = user_name
+            st.write(user_name, "-", login_success)
+            #rerun app
+            st.experimental_rerun()
     
-    speech_config = speechsdk.SpeechConfig(subscription=subscription_key, region=region)
-    #speech_config.speech_recognition_language="en-US"
-    speech_config.speech_recognition_language="it-IT"
+    elif st.session_state.login_success:
+        st.write('Welcome: ', st.session_state.user_name)
 
-    audio_config = speechsdk.audio.AudioConfig(use_default_microphone=True)
-    speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)
+        persona = st.sidebar.selectbox("Select a persona", ["", "Leonardo Da Vinci", "Albert Einstein", "Nelson Mandela", "Martin Luther King", "Jarvis", "Lady"])
 
-    #show a button with "click to record your voice"
-    voice_record = st.button("Click to record your voice")
-    if voice_record:
-        speech_recognition_result = speech_recognizer.recognize_once_async().get()
+        # Add a checkbox control to enable or disable voice
+        use_voice = st.sidebar.checkbox("Use voice", value=False)
+        use_voice_st = st.sidebar.checkbox("User voice st", value=False)
 
-        if speech_recognition_result.reason == speechsdk.ResultReason.RecognizedSpeech:
-            text = speech_recognition_result.text
-            st.write ("Recognized: {}".format(text))
-            #print("Recognized: {}".format(speech_recognition_result.text))
-        elif speech_recognition_result.reason == speechsdk.ResultReason.NoMatch:
-            st.write("No speech could be recognized: {}".format(speech_recognition_result.no_match_details))
-            #print("No speech could be recognized: {}".format(speech_recognition_result.no_match_details))
-        elif speech_recognition_result.reason == speechsdk.ResultReason.Canceled:
-            cancellation_details = speech_recognition_result.cancellation_details
-            print("Speech Recognition canceled: {}".format(cancellation_details.reason))
-            if cancellation_details.reason == speechsdk.CancellationReason.Error:
-                print("Error details: {}".format(cancellation_details.error_details))
-                print("Did you set the speech resource key and region values?")
+        context = f"This is a conversation between Me and {persona}."
+        conversation_history = st.session_state.conversation_history
 
+        if st.session_state.current_persona != persona:
+            st.session_state.previous_persona = st.session_state.current_persona
+            st.session_state.current_persona = persona
 
-def speech_to_text(audio_file, language="it-IT"):
-    subscription_key = os.getenv("AZURE_COGNITIVE_SERVICES_KEY")
-    region = os.getenv("AZURE_COGNITIVE_SERVICES_REGION")
+        if st.session_state.current_persona:
+            st.write(f"You are talking with {st.session_state.current_persona}")
+        else:
+            st.write("Please select a persona from the sidebar")
+
+        handle_conversation_reset()
+        handle_save_conversation()
+
+        if st.session_state.conversation_history != "":
+            st.write(st.session_state.conversation_history)
+
+        if st.session_state.current_persona:
+            question = st.text_input("Have anything to ask?", key="question_box")
+
+            if persona != "" and question != "" and question != st.session_state.question:
+                st.session_state.question = question
+
+                prompt = f"{context}\n\n{conversation_history}\n\nMe: {question}\n\n"
+                
+                answer = ai_complete(prompt, max_tokens=100, temperature=0.2)
+
+                answer_1 = answer.split("Me:")[0]
     
-    speech_config = speechsdk.SpeechConfig(subscription=subscription_key, region=region)
-    speech_config.speech_recognition_language=language
+                # Update the conversation history
+                st.session_state.conversation_history += f"\n\nMe: {question}\n\n{answer_1}"
 
-    audio_config = speechsdk.AudioConfig(filename=audio_file)
-    speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)
+                st.write ("\n\nMe: ",question,"\n\n",answer_1)
 
-    speech_recognition_result = speech_recognizer.recognize_once_async().get()
+                if use_voice:
+                    #drop the {persona} from the answer
+                    answer_2 = answer_1.split(": ")[1]
+                    voice_type = assign_voice(persona, answer_2)
+                    text_to_speech(answer_2, voice_type)
+                    st.experimental_rerun()
+                
+                if use_voice_st:
+                    #drop the {persona} from the answer
+                    answer_2 = answer_1.split(": ")[1]
+                    voice_type = assign_voice(persona, answer_2)
+                    text_to_speech_st(answer_2, voice_type)
+                
+                else:
+                    st.experimental_rerun()
 
-    if speech_recognition_result.reason == speechsdk.ResultReason.RecognizedSpeech:
-        text = speech_recognition_result.text
-    
-    else:
-        text = ""
-
-    return text
-
+        # Handle file uploading and document reviewing for Jarvis persona
+        if st.session_state.current_persona == "Jarvis":
+            st.write("Remember you can upload documents to the server and I will index them for you.")
+            handle_load_documents()
+            st.write("Remember you can also browse the documents already uploaded to the server.")
+            handle_review_documents()
 
 
-audio_bytes = audio_recorder()
-#plays back audio recorded
-if audio_bytes:
-    st.audio(audio_bytes, format="audio/wav")
-#converts audio to text
-#write audio_bytes to a file called "speech.wav"
-#ask the user to click a button to trigger speech translation
-if audio_bytes:
-    translate = st.button("Click the button below to translate your speech to text")
-
-    if translate:
-        with open("speech.wav", "wb") as f:
-            f.write(audio_bytes)
-
-        text = speech_to_text("speech.wav")
-        st.write('This is what you said: ', text)
+if __name__ == "__main__":
+    main()
