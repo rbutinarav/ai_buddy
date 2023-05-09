@@ -77,7 +77,8 @@ def getBlob(blob_path, blob_name):
 
 
 def text_to_speech(text, voicetype="it-IT-IsabellaNeural", ssml=False):
-
+#this is the regular text to speech function, that unfortunately does not work with streamlit server
+#so we made a modified version called text_to_speech_st
     subscription_key = st.secrets["AZURE_COGNITIVE_SERVICES_KEY"]
     region = os.getenv("AZURE_COGNITIVE_SERVICES_REGION")
 
