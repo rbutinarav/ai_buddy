@@ -136,4 +136,5 @@ def text_to_speech_st(text, voicetype="it-IT-IsabellaNeural"):
     stream.save_to_wav_file(filename) #syncrhonously
 
     #play file
-    play_audio_file(filename)
+    st.audio (filename, format='audio/wav', start_time=0)
+    
