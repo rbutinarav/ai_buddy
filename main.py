@@ -1,6 +1,6 @@
 import streamlit as st
 import sys
-from azure_functions import text_to_speech, detect_language, text_to_speech_dev
+from azure_functions import text_to_speech, detect_language, text_to_speech_st
 from openai_functions import ai_complete
 
 #ask user to input text
@@ -48,7 +48,7 @@ st.write ("Assigned voice: ", assigned_voice)
 st.write ("Assigned voice id: ", assigned_voice_id)
 
 #text_to_speech_dev(text, assigned_voice_id, use_speaker=True)
-text_to_speech_dev (text, assigned_voice_id, use_speaker=False)
+text_to_speech_st (text, assigned_voice_id, use_speaker=False)
 #text_to_speech(text, assigned_voice_id)
 
 #make a revised text appling SSML tags
@@ -61,8 +61,3 @@ text_to_speech_dev (text, assigned_voice_id, use_speaker=False)
 #text_to_speech("This should sound more natural, as I applied some markup tags to the text", assigned_voice_id)
 
 #text_to_speech(markup_text, assigned_voice_id, ssml=True)
-
-
-
-
-

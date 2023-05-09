@@ -6,6 +6,7 @@ from azure.core.credentials import AzureKeyCredential
 from azure.storage.blob import BlobServiceClient
 import azure.cognitiveservices.speech as speechsdk
 import datetime
+from audio_functions import play_audio_file
 
 dotenv.load_dotenv()
 
@@ -113,8 +114,8 @@ def detect_language(text):
     return detected_language
 
 
-def text_to_speech_dev(text, voicetype="it-IT-IsabellaNeural", use_speaker=False):
-#using memory stream, working only for producing audio files, currently does not stream to speaker
+def text_to_speech_st(text, voicetype="it-IT-IsabellaNeural"):
+#modified version to first create a wave file and the play it to solve libraries issues with stramlit
     
     subscription_key = st.secrets["AZURE_COGNITIVE_SERVICES_KEY"]
     region = os.getenv("AZURE_COGNITIVE_SERVICES_REGION")
@@ -126,14 +127,12 @@ def text_to_speech_dev(text, voicetype="it-IT-IsabellaNeural", use_speaker=False
     result = speech_synthesizer.speak_text_async(text).get()
     stream = speechsdk.AudioDataStream(result)
 
-    if use_speaker:
-        audio_config = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)
-        speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)
-        stream.read_data
-    else:
-        #create a date-time-stamped
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-        #create a unique filename for audio file using datetime
-        #filename = "audio_files/audio_file_"+timestamp+".wav"
-        filename = "audio_file_"+timestamp+".wav"
-        stream.save_to_wav_file(filename) #syncrhonously
+    #create a date-time-stamped
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    #create a unique filename for audio file using datetime
+    #filename = "audio_files/audio_file_"+timestamp+".wav"
+    filename = "audio_file_"+timestamp+".wav"
+    stream.save_to_wav_file(filename) #syncrhonously
+
+    #play file
+    play_audio_file(filename)
