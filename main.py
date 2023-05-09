@@ -68,13 +68,14 @@ def speech_to_text_st():
                 print("Error details: {}".format(cancellation_details.error_details))
                 print("Did you set the speech resource key and region values?")
 
-speech_to_text_st()
+def speech_play_audio():
+    audio_bytes = audio_recorder()
+    if audio_bytes:
+        st.audio(audio_bytes, format="audio/wav")
+
+speech_play_audio
 
 
-
-#audio_bytes = audio_recorder()
-#if audio_bytes:
-#    st.audio(audio_bytes, format="audio/wav")
 
 #st.write("Click the button below to transcribe the audio")
 #if st.button("Transcribe"):
