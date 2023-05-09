@@ -5,7 +5,7 @@ from openai_functions import ai_complete
 from azure_functions import uploadToBlobStorage, listBlobs, text_to_speech, text_to_speech_st, detect_language
 from user_auth import create_user, get_user, modify_user, user_login, add_user
 
-
+#
 # Define functions
 def initialize_state():
     session_vars = [
