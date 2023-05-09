@@ -7,3 +7,4 @@ python-dotenv
 openai
 wave
 pydub
+audio_recorder_streamlit
