@@ -1,7 +1,6 @@
 import streamlit as st
 import sys
 from azure_functions import text_to_speech, detect_language, text_to_speech_dev
-from azure_functions_dev import text_to_speech_dev
 from openai_functions import ai_complete
 
 #ask user to input text
