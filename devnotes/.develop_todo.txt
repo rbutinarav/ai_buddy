@@ -1,4 +1,3 @@
-1-fix the authentication issues (too much error messages) - DON 7.5.2023
 2-?create a domain for ai-buddy (website, email)
-3-move on with the speech rendering
 
+evaluate if moving to docker for better support for audio

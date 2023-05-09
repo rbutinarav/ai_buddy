@@ -6,7 +6,6 @@ from azure.core.credentials import AzureKeyCredential
 from azure.storage.blob import BlobServiceClient
 import azure.cognitiveservices.speech as speechsdk
 import datetime
-from audio_functions import play_audio_file
 
 dotenv.load_dotenv()
 
