@@ -1,3 +1,4 @@
-2-?create a domain for ai-buddy (website, email)
+test_speech_to_text : funziona anche su streamlit app > da inserire le funzionalità in main
 
-evaluate if moving to docker for better support for audio
+?create a domain for ai-buddy (website, email)
+?evaluate if moving to docker for better support for audio

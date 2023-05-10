@@ -136,4 +136,37 @@ def text_to_speech_st(text, voicetype="it-IT-IsabellaNeural"):
 
     #play file
     st.audio (filename, format='audio/wav', start_time=0)
+
+
+def record_speech_to_text(language="it-IT"):
+    # This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
+    # Does not work on streamlit server
+
+    text =""
+
+    subscription_key = st.secrets["AZURE_COGNITIVE_SERVICES_KEY"]
+    region = os.getenv("AZURE_COGNITIVE_SERVICES_REGION")
     
+    speech_config = speechsdk.SpeechConfig(subscription=subscription_key, region=region)
+    #speech_config.speech_recognition_language="en-US"
+    speech_config.speech_recognition_language=language
+
+    audio_config = speechsdk.audio.AudioConfig(use_default_microphone=True)
+    speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)
+
+    speech_recognition_result = speech_recognizer.recognize_once_async().get()
+
+    if speech_recognition_result.reason == speechsdk.ResultReason.RecognizedSpeech:
+        text = speech_recognition_result.text
+
+    elif speech_recognition_result.reason == speechsdk.ResultReason.NoMatch:
+        text = ""
+
+    elif speech_recognition_result.reason == speechsdk.ResultReason.Canceled:
+        cancellation_details = speech_recognition_result.cancellation_details
+        print("Speech Recognition canceled: {}".format(cancellation_details.reason))
+        if cancellation_details.reason == speechsdk.CancellationReason.Error:
+            print("Error details: {}".format(cancellation_details.error_details))
+            print("Did you set the speech resource key and region values?")
+    return text
+

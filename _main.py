@@ -2,11 +2,9 @@ import os
 import datetime
 import streamlit as st
 from openai_functions import ai_complete
-from azure_functions import uploadToBlobStorage, listBlobs, text_to_speech, text_to_speech_st, detect_language
+from azure_functions import uploadToBlobStorage, listBlobs, text_to_speech, text_to_speech_st, detect_language, record_speech_to_text
 from user_auth import create_user, get_user, modify_user, user_login, add_user
 import dotenv
-
-
 
 # Define functions
 def initialize_state():
@@ -107,6 +105,7 @@ def main():
         # Add a checkbox control to enable or disable voice
         use_voice = st.sidebar.checkbox("Use voice", value=False)
         use_voice_st = st.sidebar.checkbox("User voice st", value=False)
+        listen = st.sidebar.checkbox("Listen", value=False)
 
         context = f"This is a conversation between Me and {persona}."
         conversation_history = st.session_state.conversation_history
@@ -127,7 +126,13 @@ def main():
             st.write(st.session_state.conversation_history)
 
         if st.session_state.current_persona:
-            question = st.text_input("Have anything to ask?", key="question_box")
+            if listen:
+                question = ""
+                while question == "":
+                    question = record_speech_to_text(language="en-US")
+
+            else:
+                question = st.text_input("Have anything to ask?", key="question_box")
 
             if persona != "" and question != "" and question != st.session_state.question:
                 st.session_state.question = question
