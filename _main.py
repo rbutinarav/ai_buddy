@@ -106,6 +106,13 @@ def main():
         use_voice = st.sidebar.checkbox("Use voice", value=False)
         use_voice_st = st.sidebar.checkbox("User voice st", value=False)
         listen = st.sidebar.checkbox("Listen", value=False)
+        #add a sidebar.selectbox to choose the language
+        if listen:
+            language = st.sidebar.selectbox("Spoken language:",["English", "Italiano"])
+            languages = {'English': 'en-US', 'Italiano': 'it-IT'}
+            #assign a language code
+            language_id = languages[language]
+
 
         context = f"This is a conversation between Me and {persona}."
         conversation_history = st.session_state.conversation_history
@@ -129,7 +136,7 @@ def main():
             if listen:
                 question = ""
                 while question == "":
-                    question = record_speech_to_text(language="en-US")
+                    question = record_speech_to_text(language=language_id)
 
             else:
                 question = st.text_input("Have anything to ask?", key="question_box")
@@ -139,14 +146,14 @@ def main():
 
                 prompt = f"{context}\n\n{conversation_history}\n\nMe: {question}\n\n"
                 
-                answer = ai_complete(prompt, max_tokens=100, temperature=0.2)
+                answer = ai_complete(prompt, max_tokens=100, temperature=0.7)
 
                 answer_1 = answer.split("Me:")[0]
     
                 # Update the conversation history
                 st.session_state.conversation_history += f"\n\nMe: {question}\n\n{answer_1}"
 
-                st.write ("\n\nMe: ",question,"\n\n",answer_1)
+                #st.write ("\n\nMe: ",question,"\n\n",answer_1)
 
                 if use_voice:
                     #drop the {persona} from the answer
