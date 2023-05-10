@@ -13,20 +13,20 @@ Welcome to AI Buddy, a chatbot built with OpenAI, Python, and Streamlit. AI Budd
 - Implement a chatbot with OpenAI
 - Different personas can be selected to change the chatbot's personality
 - Conversations can be saved to a remote blob storage
-- Answers can be directly converted to speech using Azure Cognitive Services (experimental, currently only working locally for deployment issues)
+- Answers can be directly converted to speech
+- Full conversational experience (speech-to-text and text-to-speech) - only running repo locally, not supported by Streamlit server
 
 ## On the way
 
-- Full text-to-speech and speech-to-text integration
 - Advanced context and personalization of personas for a personalized experience
 - Memory of previous conversations
 - Document search capabilities on local storage
 
 ## Future implementation
 
+- Alternative LLM models, starting with Dolly (from Databricks)
 - Web search (using langchain)
 - Emailing/texting/social posting capabilities
-- User authentication (for limited public release)
 
 ## Usage
 
