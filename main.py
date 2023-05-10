@@ -2,11 +2,9 @@ import os
 import datetime
 import streamlit as st
 from openai_functions import ai_complete
-from azure_functions import uploadToBlobStorage, listBlobs, text_to_speech, text_to_speech_st, detect_language
+from azure_functions import uploadToBlobStorage, listBlobs, text_to_speech, text_to_speech_st, detect_language, record_speech_to_text
 from user_auth import create_user, get_user, modify_user, user_login, add_user
 import dotenv
-
-
 
 # Define functions
 def initialize_state():
@@ -107,6 +105,14 @@ def main():
         # Add a checkbox control to enable or disable voice
         use_voice = st.sidebar.checkbox("Use voice", value=False)
         use_voice_st = st.sidebar.checkbox("User voice st", value=False)
+        listen = st.sidebar.checkbox("Listen", value=False)
+        #add a sidebar.selectbox to choose the language
+        if listen:
+            language = st.sidebar.selectbox("Spoken language:",["English", "Italiano"])
+            languages = {'English': 'en-US', 'Italiano': 'it-IT'}
+            #assign a language code
+            language_id = languages[language]
+
 
         context = f"This is a conversation between Me and {persona}."
         conversation_history = st.session_state.conversation_history
@@ -127,21 +133,27 @@ def main():
             st.write(st.session_state.conversation_history)
 
         if st.session_state.current_persona:
-            question = st.text_input("Have anything to ask?", key="question_box")
+            if listen:
+                question = ""
+                while question == "":
+                    question = record_speech_to_text(language=language_id)
+
+            else:
+                question = st.text_input("Have anything to ask?", key="question_box")
 
             if persona != "" and question != "" and question != st.session_state.question:
                 st.session_state.question = question
 
                 prompt = f"{context}\n\n{conversation_history}\n\nMe: {question}\n\n"
                 
-                answer = ai_complete(prompt, max_tokens=100, temperature=0.2)
+                answer = ai_complete(prompt, max_tokens=100, temperature=0.7)
 
                 answer_1 = answer.split("Me:")[0]
     
                 # Update the conversation history
                 st.session_state.conversation_history += f"\n\nMe: {question}\n\n{answer_1}"
 
-                st.write ("\n\nMe: ",question,"\n\n",answer_1)
+                #st.write ("\n\nMe: ",question,"\n\n",answer_1)
 
                 if use_voice:
                     #drop the {persona} from the answer
