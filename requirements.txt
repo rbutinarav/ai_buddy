@@ -5,6 +5,6 @@ azure-storage-blob
 azure-cognitiveservices-speech
 python-dotenv
 openai
-#wave
-#pyaudio
-#pydub
+wave
+pydub
+audio_recorder_streamlit
