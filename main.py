@@ -78,6 +78,7 @@ initialize_state()
 dotenv.load_dotenv()
 
 def main():
+
     st.title("AI Buddy")
 
     #if environment variable AUTH = NO, bypass user login

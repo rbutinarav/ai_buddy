@@ -88,7 +88,7 @@ text = record_speech_to_text()
 context = "This is conversation with a friendly bot, ironic and a little crazy, it likes to tease and have fun."
 full_prompt = context + st.session_state["text"] + '\n Me:' + text
 
-answer = ai_complete(full_prompt, engine="chat", temperature=1)
+answer = ai_complete(full_prompt, temperature=1)
 
 st.session_state["text"] = st.session_state["text"] + text + "\n Me:" + answer
 
