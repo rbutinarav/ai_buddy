@@ -1,5 +1,3 @@
-import dotenv
-import os
 import streamlit as st
 from azure.ai.textanalytics import TextAnalyticsClient
 from azure.core.credentials import AzureKeyCredential
@@ -7,8 +5,6 @@ from azure.storage.blob import BlobServiceClient
 import azure.cognitiveservices.speech as speechsdk
 import datetime
 from general_functions import get_env
-
-dotenv.load_dotenv()
 
 
 def uploadToBlobStorage(blob_path, blob_name, file_contents):
@@ -100,8 +96,8 @@ def text_to_speech(text, voicetype="it-IT-IsabellaNeural", ssml=False):
 
 def detect_language(text):
 
-    subscription_key = st.secrets["AZURE_COGNITIVE_SERVICES_KEY"]
-    endpoint = os.getenv("AZURE_COGNITIVE_SERVICES_ENDPOINT")
+    subscription_key = get_env("AZURE_COGNITIVE_SERVICES_KEY")
+    endpoint = get_env("AZURE_COGNITIVE_SERVICES_ENDPOINT")
 
     # Create the Text Analytics client
     client = TextAnalyticsClient(endpoint, AzureKeyCredential(subscription_key))
@@ -118,8 +114,8 @@ def detect_language(text):
 def text_to_speech_st(text, voicetype="it-IT-IsabellaNeural"):
 #modified version to first create a wave file and the play it to solve libraries issues with stramlit
     
-    subscription_key = st.secrets["AZURE_COGNITIVE_SERVICES_KEY"]
-    region = os.getenv("AZURE_COGNITIVE_SERVICES_REGION")
+    subscription_key = get_env("AZURE_COGNITIVE_SERVICES_KEY")
+    region = get_env("AZURE_COGNITIVE_SERVICES_REGION")
 
     speech_config = speechsdk.SpeechConfig(subscription=subscription_key, region=region)
     speech_config.speech_synthesis_voice_name = voicetype
@@ -145,8 +141,8 @@ def record_speech_to_text(language="it-IT"):
 
     text =""
 
-    subscription_key = st.secrets["AZURE_COGNITIVE_SERVICES_KEY"]
-    region = os.getenv("AZURE_COGNITIVE_SERVICES_REGION")
+    subscription_key = get_env("AZURE_COGNITIVE_SERVICES_KEY")
+    region = get_env("AZURE_COGNITIVE_SERVICES_REGION")
     
     speech_config = speechsdk.SpeechConfig(subscription=subscription_key, region=region)
     #speech_config.speech_recognition_language="en-US"

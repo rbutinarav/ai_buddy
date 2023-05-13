@@ -9,10 +9,6 @@ def ai_complete(prompt='Hello', model='text-davinci-003', engine="gpt-35-turbo",
     import openai
     import streamlit as st
     from general_functions import get_env
-    import os
-    
-    from dotenv import load_dotenv
-    load_dotenv()
     
     if api_type == "azure":
         openai.api_type = "azure"

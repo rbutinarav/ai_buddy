@@ -1,10 +1,9 @@
-import os
 import datetime
 import streamlit as st
 from openai_functions import ai_complete
 from azure_functions import uploadToBlobStorage, listBlobs, text_to_speech, text_to_speech_st, detect_language, record_speech_to_text
-from user_auth import create_user, get_user, modify_user, user_login, add_user
-import dotenv
+from user_auth import user_login
+from general_functions import get_env
 
 # Define functions
 def initialize_state():
@@ -74,15 +73,12 @@ def assign_voice(persona, text):
 # Initialize State
 initialize_state()
 
-# Load env variables
-dotenv.load_dotenv()
-
 def main():
 
     st.title("AI Buddy")
 
     #if environment variable AUTH = NO, bypass user login
-    if os.getenv('LOGIN') == "NO":
+    if get_env("LOGIN") == "NO":
         st.session_state.login_success = True
         st.session_state.user_name = "Guest" 
         st.write ("No login")

@@ -1,4 +1,6 @@
-test_speech_to_text : funziona anche su streamlit app > da inserire le funzionalità in main
+completare i test con credenziali streamlit / env
+pubblicare su streamlit
+pubblicare su azure
 
 ?create a domain for ai-buddy (website, email)
 ?evaluate if moving to docker for better support for audio
