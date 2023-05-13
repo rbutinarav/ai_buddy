@@ -60,4 +60,4 @@ jobs:
         with:
           app-name: 'ai-buddy-dev'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_CC420960077E4FF08F2ACA55F67DC156 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_ACCDF16DCDAD4D7781D21641AAE51975 }}
