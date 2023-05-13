@@ -6,4 +6,5 @@ documents
 loaddocs.py
 output
 speech.wav
+desktop.ini
 .env
