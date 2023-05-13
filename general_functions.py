@@ -2,6 +2,8 @@ import pandas as pd
 import json
 import wave
 import pyaudio
+import streamlit as st
+import os
 
 def json_to_df (file_name):
     # Opening JSON file
@@ -30,5 +32,19 @@ def play_wav_file(wav_file):   #this function has to be tested
     stream.stop_stream()
     stream.close()
     p.terminate()
+
+
+def get_secret(secret_name):
+    # Check if we're running in Streamlit Sharing
+    if hasattr(st, 'secrets'):
+        # Try to access the secret
+        secret = st.secrets.get(secret_name)
+        if secret is not None:
+            return secret
+
+    # Fall back to environment variables
+    return os.getenv(secret_name)
+
+
 
 

@@ -6,3 +6,4 @@ documents
 loaddocs.py
 output
 speech.wav
+.env
