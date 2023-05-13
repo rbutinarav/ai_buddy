@@ -1,1 +1,5 @@
-audio is not rendered remotely
+app now works fine both if published to streamlit server and webapps
+BUT
+audio cognitive services libraries do not work properly in both environments!!!
+
+need to pass to docker option probably...

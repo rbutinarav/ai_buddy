@@ -1,6 +1,4 @@
-completare i test con credenziali streamlit / env
-pubblicare su streamlit
-pubblicare su azure
+creare dockerfile per gestire librerie audio
 
 ?create a domain for ai-buddy (website, email)
 ?evaluate if moving to docker for better support for audio

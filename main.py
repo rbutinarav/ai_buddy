@@ -100,9 +100,14 @@ def main():
         persona = st.sidebar.selectbox("Select a persona", ["", "Leonardo Da Vinci", "Albert Einstein", "Nelson Mandela", "Martin Luther King", "Jarvis", "Lady"])
 
         # Add a checkbox control to enable or disable voice
-        use_voice = st.sidebar.checkbox("Use voice", value=False)
-        use_voice_st = st.sidebar.checkbox("User voice st", value=False)
-        listen = st.sidebar.checkbox("Listen", value=False)
+        use_voice_st = st.sidebar.checkbox("Use voice", value=False)
+        use_voice = False 
+        listen = False
+        
+        if get_env("APPSITE") == "local":
+            use_voice = st.sidebar.checkbox("Use voice (local)", value=False)
+            listen = st.sidebar.checkbox("Listen (local)", value=False)
+                
         #add a sidebar.selectbox to choose the language
         if listen:
             language = st.sidebar.selectbox("Spoken language:",["English", "Italiano"])

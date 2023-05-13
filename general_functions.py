@@ -17,10 +17,8 @@ def json_to_df (file_name):
 
 def get_env(env_name):
     dotenv.load_dotenv()
-    #env_value = os.getenv(env_name)
     env_value = os.getenv(env_name)
     if env_value is None:
-        #try .streamlit/secrets.toml file
         env_value = st.secrets[env_name]    
     return env_value
     
