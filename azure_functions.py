@@ -6,6 +6,7 @@ from azure.core.credentials import AzureKeyCredential
 from azure.storage.blob import BlobServiceClient
 import azure.cognitiveservices.speech as speechsdk
 import datetime
+from general_functions import get_env
 
 dotenv.load_dotenv()
 
@@ -13,10 +14,10 @@ dotenv.load_dotenv()
 def uploadToBlobStorage(blob_path, blob_name, file_contents):
 
     # load env variables from .env file
-    container_name = os.getenv("AZURE_STORAGE_CONTAINER_NAME")
+    container_name = get_env("AZURE_STORAGE_CONTAINER_NAME")
 
     # add env variables from .secrets.toml file
-    connection_string = st.secrets["AZURE_STORAGE_CONNECTION_STRING"]
+    connection_string = get_env("AZURE_STORAGE_CONNECTION_STRING")
 
     blob_service_client = BlobServiceClient.from_connection_string(connection_string)
     blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_path+"/"+blob_name)
@@ -29,10 +30,10 @@ def uploadToBlobStorage(blob_path, blob_name, file_contents):
 def listBlobs(blob_path, filter="", max_results=10, return_string=False):
     
     # load env variables from .env file
-    container_name = os.getenv("AZURE_STORAGE_CONTAINER_NAME")
+    container_name = get_env("AZURE_STORAGE_CONTAINER_NAME")
 
     # add env variables from .secrets.toml file
-    connection_string = st.secrets["AZURE_STORAGE_CONNECTION_STRING"]
+    connection_string = get_env("AZURE_STORAGE_CONNECTION_STRING")
 
     blob_service_client = BlobServiceClient.from_connection_string(connection_string)
     container_client = blob_service_client.get_container_client(container_name)
@@ -56,10 +57,10 @@ def listBlobs(blob_path, filter="", max_results=10, return_string=False):
 def getBlob(blob_path, blob_name):
     
     # load env variables from .env file
-    container_name = os.getenv("AZURE_STORAGE_CONTAINER_NAME")
+    container_name = get_env("AZURE_STORAGE_CONTAINER_NAME")
 
     # add env variables from .secrets.toml file
-    connection_string = st.secrets["AZURE_STORAGE_CONNECTION_STRING"]
+    connection_string = get_env("AZURE_STORAGE_CONNECTION_STRING")
 
     blob_service_client = BlobServiceClient.from_connection_string(connection_string)
    
@@ -78,8 +79,8 @@ def getBlob(blob_path, blob_name):
 def text_to_speech(text, voicetype="it-IT-IsabellaNeural", ssml=False):
 #this is the regular text to speech function, that unfortunately does not work with streamlit server
 #so we made a modified version called text_to_speech_st
-    subscription_key = st.secrets["AZURE_COGNITIVE_SERVICES_KEY"]
-    region = os.getenv("AZURE_COGNITIVE_SERVICES_REGION")
+    subscription_key = get_env("AZURE_COGNITIVE_SERVICES_KEY")
+    region = get_env("AZURE_COGNITIVE_SERVICES_REGION")
 
     speech_config = speechsdk.SpeechConfig(subscription=subscription_key, region=region)
     speech_config.speech_synthesis_voice_name = voicetype

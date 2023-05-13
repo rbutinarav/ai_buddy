@@ -8,7 +8,7 @@ def ai_complete(prompt='Hello', model='text-davinci-003', engine="gpt-35-turbo",
     """
     import openai
     import streamlit as st
-    
+    from general_functions import get_env
     import os
     
     from dotenv import load_dotenv
@@ -16,15 +16,15 @@ def ai_complete(prompt='Hello', model='text-davinci-003', engine="gpt-35-turbo",
     
     if api_type == "azure":
         openai.api_type = "azure"
-        openai.api_key = st.secrets["AZURE_OPENAI_KEY"]
-        openai.api_base = os.getenv("AZURE_OPENAI_ENDPOINT")
+        openai.api_key = get_env("AZURE_OPENAI_KEY")
+        openai.api_base = get_env("AZURE_OPENAI_ENDPOINT")
         openai.api_version = "2023-03-15-preview"   
 
         response_json = openai.Completion.create(engine=engine, prompt=prompt, temperature=temperature, max_tokens=max_tokens) #this works with Azure OpenAI
  
  
     else :    
-        openai.api_key = st.secrets["OPENAI_KEY"]
+        openai.api_key = get_env("OPENAI_KEY")
         response_json = openai.Completion.create(model=model, prompt=prompt, temperature=temperature, max_tokens=max_tokens) #this works with OpenAI
     
     response_text = response_json['choices'][0]['text'] #parse text (prompt completion)
