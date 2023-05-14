@@ -1,4 +1,7 @@
 creare dockerfile per gestire librerie audio
+add identity provider
 
 ?create a domain for ai-buddy (website, email)
 ?evaluate if moving to docker for better support for audio
+
+--currently using main storage account
