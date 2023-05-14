@@ -1,25 +1,27 @@
-# Use an official Python runtime as a parent image
-FROM python:3.10-slim-buster
+# app/Dockerfile
 
-# Set the working directory in the container to /app
+FROM python:3.10-slim
+
 WORKDIR /app
 
-# Add the current directory contents into the container at /app
-ADD . /app
-
-# Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Install system libraries
 RUN apt-get update && apt-get install -y \
-    libasound2 libpulse0 \
+    build-essential \
+    curl \
+    software-properties-common \
+    git \
+    libasound2 \
     && rm -rf /var/lib/apt/lists/*
 
-# Make port 80 available to the world outside this container
-EXPOSE 80
+COPY . .
 
-# Run your application when the container launches
-#CMD ["streamlit", "run", "main.py"]
+RUN pip3 install -r requirements.txt
+
+
+EXPOSE 8501
+
+HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
+
+ENTRYPOINT ["streamlit", "run", "main.py", "--server.port=8501", "--server.address=0.0.0.0"]
 
 #bash commands:
 #docker build -t ai_buddy_dev .                                       #build docker image
@@ -27,3 +29,5 @@ EXPOSE 80
 #az acr login --name aibuddy                                          #login to azure container registry
 #docker tag ai_buddy_dev aibuddy.azurecr.io/ai_buddy_dev:v0.1         #tag docker image
 #docker push aibuddy.azurecr.io/ai_buddy_dev:v0.1                     #push docker image to azure container registry
+
+

@@ -1,0 +1,12 @@
+__pycache__
+.github
+.streamlit
+.env
+archived
+audio_files
+devfunctions
+devnotes
+documents
+output
+tests
+speech.wav
