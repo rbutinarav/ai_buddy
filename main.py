@@ -97,7 +97,7 @@ def main():
     elif st.session_state.login_success:
         st.write('Welcome: ', st.session_state.user_name)
 
-        persona = st.sidebar.selectbox("Select a persona", ["", "Leonardo Da Vinci", "Albert Einstein", "Nelson Mandela", "Martin Luther King", "Jarvis", "Lady"])
+        persona = st.sidebar.selectbox("Select a persona", ["", "Leonardo Da Vinci", "Albert Einstein", "Nelson Mandela", "Jarvis", "Lady"])
 
         # Add a checkbox control to enable or disable voice
         use_voice_st = st.sidebar.checkbox("Use voice", value=False)
@@ -155,7 +155,7 @@ def main():
                 # Update the conversation history
                 st.session_state.conversation_history += f"\n\nMe: {question}\n\n{answer_1}"
 
-                #st.write ("\n\nMe: ",question,"\n\n",answer_1)
+                st.write ("\n\nMe: ",question,"\n\n",answer_1)
 
                 if use_voice:
                     #drop the {persona} from the answer
