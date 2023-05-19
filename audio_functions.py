@@ -5,7 +5,7 @@ import azure.cognitiveservices.speech as speechsdk
 from audio_recorder_streamlit import audio_recorder
 import datetime
 from general_functions import get_env
-
+import io
 
 def record_speech_to_text(language="it-IT"):
     # This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
@@ -40,11 +40,73 @@ def record_speech_to_text(language="it-IT"):
     return text
 
 
-def audio_recorder_st():
+def audio_recorder_st(): #to be tested
     ##this works both locally and on streamlit server    
     audio_bytes = audio_recorder()
-    if audio_bytes:
-        st.audio(audio_bytes, format="audio/wav")
+    return audio_bytes
+
+
+def wave_to_text(wave_file, language="it-IT"): #to be tested
+    text = ""
+    
+    subscription_key = get_env("AZURE_COGNITIVE_SERVICES_KEY")
+    region = get_env("AZURE_COGNITIVE_SERVICES_REGION")
+
+    speech_config = speechsdk.SpeechConfig(subscription=subscription_key, region=region)
+    speech_config.speech_recognition_language = language
+
+    audio_config = speechsdk.audio.AudioConfig(filename=wave_file)
+    speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)
+
+    speech_recognition_result = speech_recognizer.recognize_once_async().get()
+
+    if speech_recognition_result.reason == speechsdk.ResultReason.RecognizedSpeech:
+        text = speech_recognition_result.text
+
+    elif speech_recognition_result.reason == speechsdk.ResultReason.NoMatch:
+        text = ""
+
+    elif speech_recognition_result.reason == speechsdk.ResultReason.Canceled:
+        cancellation_details = speech_recognition_result.cancellation_details
+        print("Speech Recognition canceled: {}".format(cancellation_details.reason))
+        if cancellation_details.reason == speechsdk.CancellationReason.Error:
+            print("Error details: {}".format(cancellation_details.error_details))
+            print("Did you set the speech resource key and region values?")
+    
+    return text
+
+
+def wave_stream_to_text(wave_stream, language="it-IT"): #to be tested
+    text = ""
+    
+    subscription_key = get_env("AZURE_COGNITIVE_SERVICES_KEY")
+    region = get_env("AZURE_COGNITIVE_SERVICES_REGION")
+
+    speech_config = speechsdk.SpeechConfig(subscription=subscription_key, region=region)
+    speech_config.speech_recognition_language = language
+
+    audio_config = speechsdk.audio.AudioConfig(stream=wave_stream)
+    speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)
+
+    speech_recognition_result = speech_recognizer.recognize_once_async().get()
+
+    if speech_recognition_result.reason == speechsdk.ResultReason.RecognizedSpeech:
+        text = speech_recognition_result.text
+
+    elif speech_recognition_result.reason == speechsdk.ResultReason.NoMatch:
+        text = ""
+
+    elif speech_recognition_result.reason == speechsdk.ResultReason.Canceled:
+        cancellation_details = speech_recognition_result.cancellation_details
+        print("Speech Recognition canceled: {}".format(cancellation_details.reason))
+        if cancellation_details.reason == speechsdk.CancellationReason.Error:
+            print("Error details: {}".format(cancellation_details.error_details))
+            print("Did you set the speech resource key and region values?")
+    
+    return text
+
+
+
 
 
 def detect_language(text):

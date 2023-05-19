@@ -2,7 +2,7 @@ import datetime
 import streamlit as st
 from openai_functions import ai_complete
 from azure_functions import uploadToBlobStorage, listBlobs
-from audio_functions import record_speech_to_text, text_to_speech, text_to_speech_st, detect_language, audio_recorder_st, wave_to_text
+from audio_functions import record_speech_to_text, text_to_speech, text_to_speech_st, detect_language
 from user_auth import user_login
 from general_functions import get_env
 
@@ -104,18 +104,18 @@ def main():
         use_voice_st = st.sidebar.checkbox("Use voice", value=False)
         use_voice = False 
         listen = False
-        listen_st = st.sidebar.checkbox("Listen", value=False)
         
         if get_env("APPSITE") == "local":
             use_voice = st.sidebar.checkbox("Use voice (local)", value=False)
             listen = st.sidebar.checkbox("Listen (local)", value=False)
                 
         #add a sidebar.selectbox to choose the language
-        if listen or listen_st:
+        if listen:
             language = st.sidebar.selectbox("Spoken language:",["English", "Italiano"])
             languages = {'English': 'en-US', 'Italiano': 'it-IT'}
             #assign a language code
             language_id = languages[language]
+
 
         context = f"This is a conversation between Me and {persona}."
         conversation_history = st.session_state.conversation_history
@@ -136,25 +136,12 @@ def main():
             st.write(st.session_state.conversation_history)
 
         if st.session_state.current_persona:
-
             if listen:
                 question = ""
                 while question == "":
                     question = record_speech_to_text(language=language_id)
 
-            #if listen_st and listen:
-            #    st.write("Listen_st and listen cannot be both selected")
-            
-            if listen_st: #and listen == False:
-                question = ""
-                wave = audio_recorder_st()
-                #save wave to file
-                if wave:
-                    with open("temp.wav", "wb") as f:
-                        f.write(wave)
-                    question = wave_to_text("temp.wav", language=language_id)
-
-            elif listen == False and listen_st == False:
+            else:
                 question = st.text_input("Have anything to ask?", key="question_box")
 
             if persona != "" and question != "" and question != st.session_state.question:
