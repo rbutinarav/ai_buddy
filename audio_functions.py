@@ -2,6 +2,7 @@ import streamlit as st
 from azure.ai.textanalytics import TextAnalyticsClient
 from azure.core.credentials import AzureKeyCredential
 import azure.cognitiveservices.speech as speechsdk
+from audio_recorder_streamlit import audio_recorder
 import datetime
 from general_functions import get_env
 
@@ -37,6 +38,13 @@ def record_speech_to_text(language="it-IT"):
             print("Error details: {}".format(cancellation_details.error_details))
             print("Did you set the speech resource key and region values?")
     return text
+
+
+def audio_recorder_st():
+    ##this works both locally and on streamlit server    
+    audio_bytes = audio_recorder()
+    if audio_bytes:
+        st.audio(audio_bytes, format="audio/wav")
 
 
 def detect_language(text):

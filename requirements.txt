@@ -5,6 +5,4 @@ azure-storage-blob
 azure-cognitiveservices-speech
 python-dotenv
 openai
-wave
-pydub
 audio_recorder_streamlit

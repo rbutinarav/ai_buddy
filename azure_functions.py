@@ -66,4 +66,3 @@ def getBlob(blob_path, blob_name):
         blob_content = False
         
     return blob_content
-
