@@ -1,7 +1,8 @@
 import datetime
 import streamlit as st
 from openai_functions import ai_complete
-from azure_functions import uploadToBlobStorage, listBlobs, text_to_speech, text_to_speech_st, detect_language, record_speech_to_text
+from azure_functions import uploadToBlobStorage, listBlobs
+from audio_functions import record_speech_to_text, text_to_speech, text_to_speech_st, detect_language
 from user_auth import user_login
 from general_functions import get_env
 

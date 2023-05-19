@@ -1,4 +1,5 @@
-creare dockerfile per gestire librerie audio
+testare docker image con audio
+refactoring main per corretta visualizzazione conversazione con speech
 add identity provider
 
 ?create a domain for ai-buddy (website, email)
