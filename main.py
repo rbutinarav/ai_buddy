@@ -112,7 +112,7 @@ def main():
                 
         #add a sidebar.selectbox to choose the language
         if listen or listen_st:
-            language = st.sidebar.selectbox("Spoken language:",["English", "Italiano"])
+            language = st.sidebar.selectbox("Spoken language:",["Italiano", "English"])
             languages = {'English': 'en-US', 'Italiano': 'it-IT'}
             #assign a language code
             language_id = languages[language]
@@ -128,6 +128,13 @@ def main():
             st.write(f"You are talking with {st.session_state.current_persona}")
         else:
             st.write("Please select a persona from the sidebar")
+
+        # Handle file uploading and document reviewing for Jarvis persona
+        if st.session_state.current_persona == "Jarvis":
+            st.write("Remember you can upload documents to the server and I will index them for you.")
+            handle_load_documents()
+            st.write("Remember you can also browse the documents already uploaded to the server.")
+            handle_review_documents()
 
         handle_conversation_reset()
         handle_save_conversation()
@@ -187,12 +194,7 @@ def main():
                 else:
                     st.experimental_rerun()
 
-        # Handle file uploading and document reviewing for Jarvis persona
-        if st.session_state.current_persona == "Jarvis":
-            st.write("Remember you can upload documents to the server and I will index them for you.")
-            handle_load_documents()
-            st.write("Remember you can also browse the documents already uploaded to the server.")
-            handle_review_documents()
+
 
 
 if __name__ == "__main__":
